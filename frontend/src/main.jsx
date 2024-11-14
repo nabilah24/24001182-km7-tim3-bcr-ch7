@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
-import "./index.css";
+// import "./index.css";
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";

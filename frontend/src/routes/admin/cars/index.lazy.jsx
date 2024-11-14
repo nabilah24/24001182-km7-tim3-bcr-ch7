@@ -9,11 +9,11 @@ import CarItem from "../../../components/CarItem";
 import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/cars/")({
-  component: () => {
+  component: () => (
     <Protected roles={[1]}>
       <CarsIndex />
-    </Protected>;
-  },
+    </Protected>
+  ),
 });
 
 function CarsIndex() {
@@ -29,7 +29,7 @@ function CarsIndex() {
       setLoading(true);
 
       const result = await getCars();
-
+      console.log(result);
       if (result.success) {
         setCars(result.data);
       }

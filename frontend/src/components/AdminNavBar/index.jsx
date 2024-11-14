@@ -111,7 +111,7 @@ const AdminNavBar = () => {
                     <Dropdown.Toggle as={NavLink}>{user?.name}</Dropdown.Toggle>
                     <Dropdown.Menu>
                       <Dropdown.Item>
-                        <Nav.Link as={Link} to="/profile">
+                        <Nav.Link as={Link} to="/admin/profile">
                           Profile
                         </Nav.Link>
                       </Dropdown.Item>

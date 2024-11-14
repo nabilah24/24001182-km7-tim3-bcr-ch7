@@ -1,6 +1,6 @@
 export const getCars = async (plate, available, availableAt) => {
   const token = localStorage.getItem("token");
-  let params;
+  let params = {};
   if (plate) {
     params.plate = plate;
   }

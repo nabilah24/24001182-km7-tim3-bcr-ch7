@@ -12,7 +12,6 @@ export const Route = createRootRoute({
 
     // Ambil user dari Redux state
     const user = useSelector((state) => state.auth.user);
-    console.log(user);
     const isAdmin = user?.roleId === 1; // Jika roleId 1, maka user adalah admin
 
     // Tentukan apakah NavBar dan SideBar harus ditampilkan
