@@ -1,10 +1,10 @@
-import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
-import { getManufactures } from '../../../services/manufactures'
-import { getTransmissions } from '../../../services/transmissions'
-import { getModelDetail, updateModel } from '../../../services/models'
-import { toast } from 'react-toastify'
-import Protected from '../../../components/Auth/Protected'
+import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { getManufactures } from "../../../services/manufactures";
+import { getTransmissions } from "../../../services/transmissions";
+import { getModelDetail, updateModel } from "../../../services/models";
+import { toast } from "react-toastify";
+import Protected from "../../../components/Auth/Protected";
 import {
   Breadcrumb,
   Container,
@@ -13,77 +13,77 @@ import {
   Card,
   Form,
   Button,
-} from 'react-bootstrap'
+} from "react-bootstrap";
 
-export const Route = createLazyFileRoute('/admin/models/edit/$id')({
+export const Route = createLazyFileRoute("/admin/models/edit/$id")({
   component: () => (
     <Protected roles={[1]}>
       <EditModel />
     </Protected>
   ),
-})
+});
 
 function EditModel() {
-  const { id } = Route.useParams()
-  const navigate = useNavigate()
+  const { id } = Route.useParams();
+  const navigate = useNavigate();
 
-  const [name, setName] = useState('')
-  const [manufactures, setManufactures] = useState([])
-  const [manufactureId, setManufactureId] = useState(0)
-  const [transmissions, setTransmissions] = useState([])
-  const [transmissionId, setTransmissionId] = useState(0)
-  const [year, setYear] = useState(null)
-  const [rentPerDay, setRentPerDay] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [isNotFound, setIsNotFound] = useState(false)
+  const [name, setName] = useState("");
+  const [manufactures, setManufactures] = useState([]);
+  const [manufactureId, setManufactureId] = useState(0);
+  const [transmissions, setTransmissions] = useState([]);
+  const [transmissionId, setTransmissionId] = useState(0);
+  const [year, setYear] = useState(null);
+  const [rentPerDay, setRentPerDay] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isNotFound, setIsNotFound] = useState(false);
 
   useEffect(() => {
     const getManufacturesData = async () => {
-      const result = await getManufactures()
+      const result = await getManufactures();
       if (result?.success) {
-        setManufactures(result?.data)
+        setManufactures(result?.data);
       }
-    }
+    };
     const getTransmissionsData = async () => {
-      const result = await getTransmissions()
+      const result = await getTransmissions();
       if (result?.success) {
-        setTransmissions(result?.data)
+        setTransmissions(result?.data);
       }
-    }
+    };
 
-    getManufacturesData()
-    getTransmissionsData()
-  }, [])
+    getManufacturesData();
+    getTransmissionsData();
+  }, []);
 
   useEffect(() => {
     const getModelDetailData = async (id) => {
-      setLoading(true)
-      const result = await getModelDetail(id)
+      setLoading(true);
+      const result = await getModelDetail(id);
       if (result?.success) {
-        setName(result.data.name)
-        setManufactureId(result.data.manufactureId)
-        setTransmissionId(result.data.transmissionId)
-        setYear(result.data.year)
-        setRentPerDay(result.data.rentPerDay)
-        setIsNotFound(false)
+        setName(result.data.name);
+        setManufactureId(result.data.manufactureId);
+        setTransmissionId(result.data.transmissionId);
+        setYear(result.data.year);
+        setRentPerDay(result.data.rentPerDay);
+        setIsNotFound(false);
       } else {
-        setIsNotFound(true)
+        setIsNotFound(true);
       }
-      setLoading(false)
-    }
+      setLoading(false);
+    };
 
     if (id) {
-      getModelDetailData(id)
+      getModelDetailData(id);
     }
-  }, [id])
+  }, [id]);
 
   if (isNotFound) {
-    navigate({ to: '/models' })
-    return
+    navigate({ to: "/models" });
+    return;
   }
 
   const onSubmit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     const request = {
       name,
@@ -91,27 +91,27 @@ function EditModel() {
       transmissionId,
       year,
       rentPerDay,
-    }
-    const result = await updateModel(id, request)
+    };
+    const result = await updateModel(id, request);
     if (result?.success) {
-      navigate({ to: `/models/${id}` })
-      return
+      navigate({ to: `/models/${id}` });
+      return;
     }
 
-    toast.error(result?.message)
-  }
+    toast.error(result?.message);
+  };
 
   return (
     <Container className="my-4 mx-0">
       <Breadcrumb>
         <Breadcrumb.Item>
-          <Link to="/">Home</Link>
+          <Link to="/admin">Home</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item>
-          <Link to="/models">Models</Link>
+          <Link to="/admin/models">Models</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item>
-          <Link to={`/models/${id}`}>Detail</Link>
+          <Link to={`/admin/models/${id}`}>Detail</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item active>Edit</Breadcrumb.Item>
       </Breadcrumb>
@@ -136,7 +136,7 @@ function EditModel() {
                       required
                       value={name}
                       onChange={(event) => {
-                        setName(event.target.value)
+                        setName(event.target.value);
                       }}
                     />
                   </Col>
@@ -237,5 +237,5 @@ function EditModel() {
         <Col md={3}></Col>
       </Row>
     </Container>
-  )
+  );
 }

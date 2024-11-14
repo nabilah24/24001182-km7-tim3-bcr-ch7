@@ -77,13 +77,13 @@ function EditTransmission() {
     <Container className="my-4">
       <Breadcrumb>
         <Breadcrumb.Item>
-          <Link to="/">Home</Link>
+          <Link to="/admin">Home</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item>
-          <Link to="/transmissions">Transmissions</Link>
+          <Link to="/admin/transmissions">Transmissions</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item>
-          <Link to={`/transmissions/${id}`}>Detail</Link>
+          <Link to={`/admin/transmissions/${id}`}>Detail</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item active>Edit</Breadcrumb.Item>
       </Breadcrumb>

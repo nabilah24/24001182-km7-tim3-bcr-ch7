@@ -15,7 +15,11 @@ const Protected = ({ children, roles }) => {
   if (token && user && roles.length > 0) {
     const isCanAccess = roles.includes(user?.roleId);
     if (!isCanAccess) {
-      navigate({ to: "/" });
+      if (user?.roleId === 1) {
+        navigate({ to: "/admin" });
+      } else {
+        navigate({ to: "/" });
+      }
       return;
     }
   }

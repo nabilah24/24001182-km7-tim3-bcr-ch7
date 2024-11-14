@@ -73,13 +73,13 @@ function EditManufacture() {
     <Container className="my-4">
       <Breadcrumb>
         <Breadcrumb.Item>
-          <Link to="/">Home</Link>
+          <Link to="/admin">Home</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item>
-          <Link to="/manufactures">Manufactures</Link>
+          <Link to="/admin/manufactures">Manufactures</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item>
-          <Link to={`/manufactures/${id}`}>Detail</Link>
+          <Link to={`/admin/manufactures/${id}`}>Detail</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item active>Edit</Breadcrumb.Item>
       </Breadcrumb>

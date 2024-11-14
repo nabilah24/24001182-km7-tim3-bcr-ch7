@@ -1,50 +1,50 @@
-import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
-import Container from 'react-bootstrap/Container'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Card from 'react-bootstrap/Card'
-import Spinner from 'react-bootstrap/Spinner'
-import Button from 'react-bootstrap/Button'
-import { deleteManufacture } from '../../../services/manufactures'
-import { getDetailManufacture } from '../../../services/manufactures'
-import { toast } from 'react-toastify'
-import { confirmAlert } from 'react-confirm-alert'
-import { useSelector } from 'react-redux'
-import Swal from 'sweetalert2'
+import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import Container from "react-bootstrap/Container";
+import Breadcrumb from "react-bootstrap/Breadcrumb";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/Card";
+import Spinner from "react-bootstrap/Spinner";
+import Button from "react-bootstrap/Button";
+import { deleteManufacture } from "../../../services/manufactures";
+import { getDetailManufacture } from "../../../services/manufactures";
+import { toast } from "react-toastify";
+import { confirmAlert } from "react-confirm-alert";
+import { useSelector } from "react-redux";
+import Swal from "sweetalert2";
 
-export const Route = createLazyFileRoute('/admin/manufactures/$id')({
+export const Route = createLazyFileRoute("/admin/manufactures/$id")({
   component: ManufactureDetail,
-})
+});
 
 function ManufactureDetail() {
-  const { id } = Route.useParams()
-  const navigate = useNavigate()
+  const { id } = Route.useParams();
+  const navigate = useNavigate();
 
-  const { user } = useSelector((state) => state.auth)
+  const { user } = useSelector((state) => state.auth);
 
-  const [manufacture, setManufacture] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isNotFound, setIsNotFound] = useState(false)
+  const [manufacture, setManufacture] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isNotFound, setIsNotFound] = useState(false);
 
   useEffect(() => {
     const getDetailManufactureData = async (id) => {
-      setIsLoading(true)
-      const result = await getDetailManufacture(id)
+      setIsLoading(true);
+      const result = await getDetailManufacture(id);
       if (result?.success) {
-        setManufacture(result.data)
-        setIsNotFound(false)
+        setManufacture(result.data);
+        setIsNotFound(false);
       } else {
-        setIsNotFound(true)
+        setIsNotFound(true);
       }
-      setIsLoading(false)
-    }
+      setIsLoading(false);
+    };
 
     if (id) {
-      getDetailManufactureData(id)
+      getDetailManufactureData(id);
     }
-  }, [id])
+  }, [id]);
 
   if (isLoading) {
     return (
@@ -55,7 +55,7 @@ function ManufactureDetail() {
           </Spinner>
         </Col>
       </Row>
-    )
+    );
   }
 
   if (isNotFound) {
@@ -65,38 +65,38 @@ function ManufactureDetail() {
           <h1 className="text-center">Manufacture is not found!</h1>
         </Col>
       </Row>
-    )
+    );
   }
 
   const onDelete = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     Swal.fire({
-      title: 'Confirm to delete',
-      text: 'Are you sure to delete this data?',
-      icon: 'warning',
+      title: "Confirm to delete",
+      text: "Are you sure to delete this data?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Yes',
-      confirmButtonColor: '#0d6efd',
-      cancelButtonText: 'No',
+      confirmButtonText: "Yes",
+      confirmButtonColor: "#0d6efd",
+      cancelButtonText: "No",
       reverseButtons: true,
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const deleteResult = await deleteManufacture(id)
+        const deleteResult = await deleteManufacture(id);
         if (deleteResult?.success) {
-          navigate({ to: '/manufactures' })
+          navigate({ to: "/admin/manufactures" });
         } else {
-          toast.error(deleteResult?.message)
+          toast.error(deleteResult?.message);
         }
       }
-    })
-  }
+    });
+  };
 
   return (
     <Container className="my-4">
       <Breadcrumb>
         <Breadcrumb.Item>
-          <Link to="/">Home</Link>
+          <Link to="/admin">Home</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item>
           <Link to="/manufactures">Manufactures</Link>
@@ -134,5 +134,5 @@ function ManufactureDetail() {
         </Col>
       </Row>
     </Container>
-  )
+  );
 }

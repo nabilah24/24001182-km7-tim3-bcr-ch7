@@ -1,50 +1,50 @@
-import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
-import Container from 'react-bootstrap/Container'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Card from 'react-bootstrap/Card'
-import Button from 'react-bootstrap/Button'
-import Spinner from 'react-bootstrap/Spinner'
-import { deleteTypeCar, getDetailTypeCar } from '../../services/types'
-import { toast } from 'react-toastify'
-import { useSelector } from 'react-redux'
-import Swal from 'sweetalert2'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrash } from '@fortawesome/free-solid-svg-icons'
+import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import Container from "react-bootstrap/Container";
+import Breadcrumb from "react-bootstrap/Breadcrumb";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/Card";
+import Button from "react-bootstrap/Button";
+import Spinner from "react-bootstrap/Spinner";
+import { deleteTypeCar, getDetailTypeCar } from "../../services/types";
+import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import Swal from "sweetalert2";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
-export const Route = createLazyFileRoute('/admin/types/$id')({
+export const Route = createLazyFileRoute("/admin/types/$id")({
   component: TypeCarDetail,
-})
+});
 
 function TypeCarDetail() {
-  const { id } = Route.useParams()
-  const navigate = useNavigate()
+  const { id } = Route.useParams();
+  const navigate = useNavigate();
 
-  const { user } = useSelector((state) => state.auth)
+  const { user } = useSelector((state) => state.auth);
 
-  const [types, setTypeCar] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isNotFound, setIsNotFound] = useState(false)
+  const [types, setTypeCar] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isNotFound, setIsNotFound] = useState(false);
 
   useEffect(() => {
     const getDetailTypeCarData = async (id) => {
-      setIsLoading(true)
-      const result = await getDetailTypeCar(id)
+      setIsLoading(true);
+      const result = await getDetailTypeCar(id);
       if (result?.success) {
-        setTypeCar(result.data)
-        setIsNotFound(false)
+        setTypeCar(result.data);
+        setIsNotFound(false);
       } else {
-        setIsNotFound(true)
+        setIsNotFound(true);
       }
-      setIsLoading(false)
-    }
+      setIsLoading(false);
+    };
 
     if (id) {
-      getDetailTypeCarData(id)
+      getDetailTypeCarData(id);
     }
-  }, [id])
+  }, [id]);
 
   if (isLoading) {
     return (
@@ -55,7 +55,7 @@ function TypeCarDetail() {
           </Spinner>
         </Col>
       </Row>
-    )
+    );
   }
 
   if (isNotFound) {
@@ -65,41 +65,41 @@ function TypeCarDetail() {
           <h1 className="text-center">Car type is not found!</h1>
         </Col>
       </Row>
-    )
+    );
   }
 
   const onDelete = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     Swal.fire({
-      title: 'Confirm to delete',
-      text: 'Are you sure to delete this data?',
-      icon: 'warning',
+      title: "Confirm to delete",
+      text: "Are you sure to delete this data?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Delete',
-      confirmButtonColor: 'red',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: "Delete",
+      confirmButtonColor: "red",
+      cancelButtonText: "Cancel",
       reverseButtons: true,
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const deleteResult = await deleteTypeCar(id)
+        const deleteResult = await deleteTypeCar(id);
         if (deleteResult?.success) {
-          navigate({ to: '/types' })
+          navigate({ to: "/admin/types" });
         } else {
-          toast.error(deleteResult?.message)
+          toast.error(deleteResult?.message);
         }
       }
-    })
-  }
+    });
+  };
 
   return (
     <Container className="my-4">
       <Breadcrumb>
         <Breadcrumb.Item>
-          <Link to="/">Home</Link>
+          <Link to="/admin">Home</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item>
-          <Link to="/types">Types</Link>
+          <Link to="/admin/types">Types</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item active>Detail</Breadcrumb.Item>
       </Breadcrumb>
@@ -138,5 +138,5 @@ function TypeCarDetail() {
         </Col>
       </Row>
     </Container>
-  )
+  );
 }

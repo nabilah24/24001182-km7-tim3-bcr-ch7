@@ -75,10 +75,10 @@ function CreateCar() {
     <Container className="my-4 mx-0">
       <Breadcrumb>
         <Breadcrumb.Item>
-          <Link to="/">Home</Link>
+          <Link to="/admin">Home</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item>
-          <Link to="/models">Models</Link>
+          <Link to="/admin/models">Models</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item active>Create</Breadcrumb.Item>
       </Breadcrumb>

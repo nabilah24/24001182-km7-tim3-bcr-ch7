@@ -1,44 +1,44 @@
-import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons'
-import { deleteModel, getModelDetail } from '../../services/models'
-import { toast } from 'react-toastify'
-import { useSelector } from 'react-redux'
-import Swal from 'sweetalert2'
-import { Row, Col, Card, Button, Breadcrumb, Container } from 'react-bootstrap'
+import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { deleteModel, getModelDetail } from "../../services/models";
+import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import Swal from "sweetalert2";
+import { Row, Col, Card, Button, Breadcrumb, Container } from "react-bootstrap";
 
-export const Route = createLazyFileRoute('/admin/models/$id')({
+export const Route = createLazyFileRoute("/admin/models/$id")({
   component: ModelsDetail,
-})
+});
 
 function ModelsDetail() {
-  const { id } = Route.useParams()
-  const navigate = useNavigate()
+  const { id } = Route.useParams();
+  const navigate = useNavigate();
 
-  const { user } = useSelector((state) => state.auth)
+  const { user } = useSelector((state) => state.auth);
 
-  const [models, setModels] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [isNotFound, setIsNotFound] = useState(false)
+  const [models, setModels] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [isNotFound, setIsNotFound] = useState(false);
 
   useEffect(() => {
     const getModelDetailData = async (id) => {
-      setLoading(true)
-      const result = await getModelDetail(id)
+      setLoading(true);
+      const result = await getModelDetail(id);
       if (result?.success) {
-        setModels(result.data)
-        setIsNotFound(false)
+        setModels(result.data);
+        setIsNotFound(false);
       } else {
-        setIsNotFound(true)
+        setIsNotFound(true);
       }
-      setLoading(false)
-    }
+      setLoading(false);
+    };
 
     if (id) {
-      getModelDetailData(id)
+      getModelDetailData(id);
     }
-  }, [id])
+  }, [id]);
 
   if (loading) {
     return (
@@ -47,7 +47,7 @@ function ModelsDetail() {
           <h1 className="text-center">Loading...</h1>
         </Col>
       </Row>
-    )
+    );
   }
 
   if (isNotFound) {
@@ -57,41 +57,41 @@ function ModelsDetail() {
           <h1 className="text-center">Model is not found!</h1>
         </Col>
       </Row>
-    )
+    );
   }
 
   const handleDelete = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     Swal.fire({
-      title: 'Confirm to delete',
-      text: 'Are you sure to delete this data?',
-      icon: 'warning',
+      title: "Confirm to delete",
+      text: "Are you sure to delete this data?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Yes',
-      confirmButtonColor: '#0d6efd',
-      cancelButtonText: 'No',
+      confirmButtonText: "Yes",
+      confirmButtonColor: "#0d6efd",
+      cancelButtonText: "No",
       reverseButtons: true,
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const deleteResult = await deleteModel(id)
+        const deleteResult = await deleteModel(id);
         if (deleteResult?.success) {
-          navigate({ to: '/models' })
+          navigate({ to: "/admin/models" });
         } else {
-          toast.error(deleteResult?.message)
+          toast.error(deleteResult?.message);
         }
       }
-    })
-  }
+    });
+  };
 
   return (
     <Container className="my-4 mx-0">
       <Breadcrumb>
         <Breadcrumb.Item>
-          <Link to="/">Home</Link>
+          <Link to="/admin">Home</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item>
-          <Link to="/models">Models</Link>
+          <Link to="/admin/models">Models</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item active>Detail</Breadcrumb.Item>
       </Breadcrumb>
@@ -118,7 +118,7 @@ function ModelsDetail() {
 
               {/* rentPerDay */}
               <Card.Text className="mb-1">
-                Rent Per Day: Rp {models?.rentPerDay?.toLocaleString('id-ID')}
+                Rent Per Day: Rp {models?.rentPerDay?.toLocaleString("id-ID")}
                 ,00
               </Card.Text>
 
@@ -138,12 +138,12 @@ function ModelsDetail() {
                 <Button
                   size="md"
                   className="py-2 px-3 bg-white rounded-0 fw-semibold"
-                  style={{ border: '1px solid #fa2c5a', color: '#fa2c5a' }}
+                  style={{ border: "1px solid #fa2c5a", color: "#fa2c5a" }}
                   onClick={handleDelete}
                 >
                   <FontAwesomeIcon
                     icon={faTrashCan}
-                    style={{ color: '#fa2c5a' }}
+                    style={{ color: "#fa2c5a" }}
                     className="me-2"
                   />
                   Delete Model
@@ -164,5 +164,5 @@ function ModelsDetail() {
         </Col>
       </Row>
     </Container>
-  )
+  );
 }

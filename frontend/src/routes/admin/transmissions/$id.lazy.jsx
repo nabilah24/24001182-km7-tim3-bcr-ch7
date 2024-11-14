@@ -1,50 +1,50 @@
-import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
-import Container from 'react-bootstrap/Container'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Card from 'react-bootstrap/Card'
-import Spinner from 'react-bootstrap/Spinner'
-import Button from 'react-bootstrap/Button'
-import { deleteTransmission } from '../../services/transmissions'
-import { getDetailTransmission } from '../../services/transmissions'
-import { toast } from 'react-toastify'
-import { confirmAlert } from 'react-confirm-alert'
-import { useSelector } from 'react-redux'
-import Swal from 'sweetalert2'
+import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import Container from "react-bootstrap/Container";
+import Breadcrumb from "react-bootstrap/Breadcrumb";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/Card";
+import Spinner from "react-bootstrap/Spinner";
+import Button from "react-bootstrap/Button";
+import { deleteTransmission } from "../../services/transmissions";
+import { getDetailTransmission } from "../../services/transmissions";
+import { toast } from "react-toastify";
+import { confirmAlert } from "react-confirm-alert";
+import { useSelector } from "react-redux";
+import Swal from "sweetalert2";
 
-export const Route = createLazyFileRoute('/admin/transmissions/$id')({
+export const Route = createLazyFileRoute("/admin/transmissions/$id")({
   component: TransmissionDetail,
-})
+});
 
 function TransmissionDetail() {
-  const { id } = Route.useParams()
-  const navigate = useNavigate()
+  const { id } = Route.useParams();
+  const navigate = useNavigate();
 
-  const { user } = useSelector((state) => state.auth)
+  const { user } = useSelector((state) => state.auth);
 
-  const [transmission, setTransmission] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isNotFound, setIsNotFound] = useState(false)
+  const [transmission, setTransmission] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isNotFound, setIsNotFound] = useState(false);
 
   useEffect(() => {
     const getDetailTransmissionData = async (id) => {
-      setIsLoading(true)
-      const result = await getDetailTransmission(id)
+      setIsLoading(true);
+      const result = await getDetailTransmission(id);
       if (result?.success) {
-        setTransmission(result.data)
-        setIsNotFound(false)
+        setTransmission(result.data);
+        setIsNotFound(false);
       } else {
-        setIsNotFound(true)
+        setIsNotFound(true);
       }
-      setIsLoading(false)
-    }
+      setIsLoading(false);
+    };
 
     if (id) {
-      getDetailTransmissionData(id)
+      getDetailTransmissionData(id);
     }
-  }, [id])
+  }, [id]);
 
   if (isLoading) {
     return (
@@ -55,7 +55,7 @@ function TransmissionDetail() {
           </Spinner>
         </Col>
       </Row>
-    )
+    );
   }
 
   if (isNotFound) {
@@ -65,41 +65,41 @@ function TransmissionDetail() {
           <h1 className="text-center">Transmission is not found!</h1>
         </Col>
       </Row>
-    )
+    );
   }
 
   const onDelete = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     Swal.fire({
-      title: 'Confirm to delete',
-      text: 'Are you sure to delete this data?',
-      icon: 'warning',
+      title: "Confirm to delete",
+      text: "Are you sure to delete this data?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Yes',
-      confirmButtonColor: '#0d6efd',
-      cancelButtonText: 'No',
+      confirmButtonText: "Yes",
+      confirmButtonColor: "#0d6efd",
+      cancelButtonText: "No",
       reverseButtons: true,
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const deleteResult = await deleteTransmission(id)
+        const deleteResult = await deleteTransmission(id);
         if (deleteResult?.success) {
-          navigate({ to: '/transmissions' })
+          navigate({ to: "/admin/transmissions" });
         } else {
-          toast.error(deleteResult?.message)
+          toast.error(deleteResult?.message);
         }
       }
-    })
-  }
+    });
+  };
 
   return (
     <Container className="my-4">
       <Breadcrumb>
         <Breadcrumb.Item>
-          <Link to="/">Home</Link>
+          <Link to="/admin">Home</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item>
-          <Link to="/transmissions">Transmissions</Link>
+          <Link to="/admin/transmissions">Transmissions</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item active>Detail</Breadcrumb.Item>
       </Breadcrumb>
@@ -137,5 +137,5 @@ function TransmissionDetail() {
         </Col>
       </Row>
     </Container>
-  )
+  );
 }

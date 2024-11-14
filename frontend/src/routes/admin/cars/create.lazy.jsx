@@ -1,10 +1,10 @@
-import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
-import { getModels } from '../../services/models'
-import { getTypeCars } from '../../services/types'
-import { createCar } from '../../services/cars'
-import { toast } from 'react-toastify'
-import Protected from '../../components/Auth/Protected'
+import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { getModels } from "../../../services/models";
+import { getTypeCars } from "../../../services/types";
+import { createCar } from "../../../services/cars";
+import { toast } from "react-toastify";
+import Protected from "../../../components/Auth/Protected";
 import {
   Row,
   Col,
@@ -16,108 +16,108 @@ import {
   Container,
   InputGroup,
   ListGroup,
-} from 'react-bootstrap'
-import NoImage from '../../../img/no-image.jpg'
+} from "react-bootstrap";
+import NoImage from "../../../../img/no-image.jpg";
 
-export const Route = createLazyFileRoute('/admin/cars/create')({
+export const Route = createLazyFileRoute("/admin/cars/create")({
   component: () => (
     <Protected roles={[1]}>
       <CreateCar />
     </Protected>
   ),
-})
+});
 
 function CreateCar() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const [plate, setPlate] = useState('')
-  const [models, setModels] = useState([])
-  const [modelId, setModelId] = useState(0)
-  const [types, setTypes] = useState([])
-  const [typeId, setTypeId] = useState(0)
-  const [availableAt, setAvailableAt] = useState('')
-  const [available, setAvailable] = useState(false)
-  const [image, setImage] = useState(undefined)
-  const [currentImage, setCurrentImage] = useState(undefined)
+  const [plate, setPlate] = useState("");
+  const [models, setModels] = useState([]);
+  const [modelId, setModelId] = useState(0);
+  const [types, setTypes] = useState([]);
+  const [typeId, setTypeId] = useState(0);
+  const [availableAt, setAvailableAt] = useState("");
+  const [available, setAvailable] = useState(false);
+  const [image, setImage] = useState(undefined);
+  const [currentImage, setCurrentImage] = useState(undefined);
 
   // Options and Specs
-  const [options, setOptions] = useState([])
-  const [inputOptions, setInputOptions] = useState('')
-  const [specs, setSpecs] = useState([])
-  const [inputSpecs, setInputSpecs] = useState('')
+  const [options, setOptions] = useState([]);
+  const [inputOptions, setInputOptions] = useState("");
+  const [specs, setSpecs] = useState([]);
+  const [inputSpecs, setInputSpecs] = useState("");
 
   useEffect(() => {
     const getModelsData = async () => {
-      const result = await getModels()
+      const result = await getModels();
       if (result?.success) {
-        setModels(result?.data)
+        setModels(result?.data);
       }
-    }
+    };
     const getTypesData = async () => {
-      const result = await getTypeCars()
+      const result = await getTypeCars();
       if (result?.success) {
-        setTypes(result?.data)
+        setTypes(result?.data);
       }
-    }
+    };
 
-    getModelsData()
-    getTypesData()
-  }, [])
+    getModelsData();
+    getTypesData();
+  }, []);
 
   // ------ handle description input --------
-  const [description, setDescription] = useState('')
-  const textMaxLength = 250
+  const [description, setDescription] = useState("");
+  const textMaxLength = 250;
 
   // ------ Input Array Options -----------
   // Fungsi untuk menambah item ke array options
   const addOptionItem = () => {
-    if (inputOptions.trim() === '') {
-      toast.error('Input for Options is required')
-      return
+    if (inputOptions.trim() === "") {
+      toast.error("Input for Options is required");
+      return;
     }
-    setOptions([...options, inputOptions]) // Tambahkan item baru ke array
-    setInputOptions('') // Kosongkan input
-  }
+    setOptions([...options, inputOptions]); // Tambahkan item baru ke array
+    setInputOptions(""); // Kosongkan input
+  };
 
   // Fungsi untuk mengedit item di array options
   const editOptionItem = (index, newOption) => {
-    const newOptions = [...options]
-    newOptions[index] = newOption
-    setOptions(newOptions)
-  }
+    const newOptions = [...options];
+    newOptions[index] = newOption;
+    setOptions(newOptions);
+  };
 
   // Fungsi untuk menghapus item dari array options
   const removeOptionItem = (index) => {
-    const newOptions = options.filter((_, i) => i !== index)
-    setOptions(newOptions)
-  }
+    const newOptions = options.filter((_, i) => i !== index);
+    setOptions(newOptions);
+  };
 
   // ------ Input Array Specs -----------
   // Fungsi untuk menambah item ke array specs
   const addSpecItem = () => {
-    if (inputSpecs.trim() === '') {
-      toast.error('Input for Specs is required')
-      return
+    if (inputSpecs.trim() === "") {
+      toast.error("Input for Specs is required");
+      return;
     }
-    setSpecs([...specs, inputSpecs]) // Tambahkan item baru ke array
-    setInputSpecs('') // Kosongkan input
-  }
+    setSpecs([...specs, inputSpecs]); // Tambahkan item baru ke array
+    setInputSpecs(""); // Kosongkan input
+  };
 
   // Fungsi untuk mengedit item di array specs
   const editSpecItem = (index, newSpec) => {
-    const newSpecs = [...specs]
-    newSpecs[index] = newSpec
-    setSpecs(newSpecs)
-  }
+    const newSpecs = [...specs];
+    newSpecs[index] = newSpec;
+    setSpecs(newSpecs);
+  };
 
   // Fungsi untuk menghapus item dari array specs
   const removeSpecItem = (index) => {
-    const newSpecs = specs.filter((_, i) => i !== index)
-    setSpecs(newSpecs)
-  }
+    const newSpecs = specs.filter((_, i) => i !== index);
+    setSpecs(newSpecs);
+  };
 
   const onSubmit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     const request = {
       plate,
@@ -129,24 +129,24 @@ function CreateCar() {
       image,
       options,
       specs,
-    }
-    const result = await createCar(request)
+    };
+    const result = await createCar(request);
     if (result?.success) {
-      navigate({ to: '/cars' })
-      return
+      navigate({ to: "/cars" });
+      return;
     }
 
-    toast.error(result?.message)
-  }
+    toast.error(result?.message);
+  };
 
   return (
     <Container className="my-4 mx-0">
       <Breadcrumb>
         <Breadcrumb.Item>
-          <Link to="/">Home</Link>
+          <Link to="/admin">Home</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item>
-          <Link to="/cars">Cars</Link>
+          <Link to="/admin/cars">Cars</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item active>Create</Breadcrumb.Item>
       </Breadcrumb>
@@ -173,7 +173,7 @@ function CreateCar() {
                           required
                           value={plate}
                           onChange={(event) => {
-                            setPlate(event.target.value)
+                            setPlate(event.target.value);
                           }}
                         />
                       </Col>
@@ -290,10 +290,10 @@ function CreateCar() {
                           placeholder="Choose Image"
                           required
                           onChange={(event) => {
-                            setImage(event.target.files[0])
+                            setImage(event.target.files[0]);
                             setCurrentImage(
-                              URL.createObjectURL(event.target.files[0]),
-                            )
+                              URL.createObjectURL(event.target.files[0])
+                            );
                           }}
                           accept=".jpeg,.jpg,.png"
                         />
@@ -415,5 +415,5 @@ function CreateCar() {
         <Col md={3}></Col>
       </Row>
     </Container>
-  )
+  );
 }

@@ -56,7 +56,7 @@ function CarsIndex() {
     <Container className="my-4">
       <Breadcrumb>
         <Breadcrumb.Item>
-          <Link to="/">Home</Link>
+          <Link to="/admin">Home</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item active>Cars</Breadcrumb.Item>
       </Breadcrumb>
@@ -71,7 +71,7 @@ function CarsIndex() {
               variant="primary"
               className="rounded-0"
               as={Link}
-              to="/cars/create"
+              to="/admin/cars/create"
             >
               <FontAwesomeIcon icon={faPlus} className="me-3" />
               <span>Create Car</span>

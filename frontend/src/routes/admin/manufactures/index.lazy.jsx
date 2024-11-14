@@ -67,7 +67,7 @@ function IndexManufacture() {
     <Container className="my-4">
       <Breadcrumb>
         <Breadcrumb.Item>
-          <Link to="/">Home</Link>
+          <Link to="/admin">Home</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item active>Manufactures</Breadcrumb.Item>
       </Breadcrumb>

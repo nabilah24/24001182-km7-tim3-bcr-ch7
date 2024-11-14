@@ -1,30 +1,30 @@
-import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useSelector } from 'react-redux'
-import Col from 'react-bootstrap/Col'
-import Row from 'react-bootstrap/Row'
-import Card from 'react-bootstrap/Card'
-import { useEffect } from 'react'
-import { Breadcrumb, Container } from 'react-bootstrap'
+import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useSelector } from "react-redux";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
+import Card from "react-bootstrap/Card";
+import { useEffect } from "react";
+import { Breadcrumb, Container } from "react-bootstrap";
 
-export const Route = createLazyFileRoute('/admin/profile')({
+export const Route = createLazyFileRoute("/admin/profile")({
   component: Profile,
-})
+});
 
 function Profile() {
-  const navigate = useNavigate()
-  const { user, token } = useSelector((state) => state.auth)
+  const navigate = useNavigate();
+  const { user, token } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (!token) {
-      navigate({ to: '/login' })
+      navigate({ to: "/login" });
     }
-  }, [navigate, token])
+  }, [navigate, token]);
 
   return (
     <Container className="my-4 mx-0">
       <Breadcrumb>
         <Breadcrumb.Item>
-          <Link to="/">Home</Link>
+          <Link to="/admin">Home</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item active>Profile</Breadcrumb.Item>
       </Breadcrumb>
@@ -45,5 +45,5 @@ function Profile() {
         </Col>
       </Row>
     </Container>
-  )
+  );
 }

@@ -1,6 +1,5 @@
-import { Card } from "react-bootstrap";
+import { Card, Button } from "react-bootstrap";
 import { Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
 
 const CarItem = ({ car }) => {
   const startRent = new Date(car.availableAt);
@@ -40,7 +39,7 @@ const CarItem = ({ car }) => {
 
       <Button
         as={Link}
-        to={`/cars/${car?.id}`}
+        to={`/admin/cars/${car?.id}`}
         className="py-2 px-3 bg-primary rounded-0 fw-semibold text-white border-primary"
         size="md"
       >

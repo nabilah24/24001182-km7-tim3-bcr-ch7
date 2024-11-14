@@ -1,11 +1,11 @@
-import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons'
-import { deleteCar, getCarDetail } from '../../services/cars'
-import { toast } from 'react-toastify'
-import { useSelector } from 'react-redux'
-import Swal from 'sweetalert2'
+import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { deleteCar, getCarDetail } from "../../../services/cars";
+import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import Swal from "sweetalert2";
 import {
   Breadcrumb,
   Container,
@@ -14,39 +14,39 @@ import {
   Col,
   Card,
   Button,
-} from 'react-bootstrap'
+} from "react-bootstrap";
 
-export const Route = createLazyFileRoute('/admin/cars/$id')({
+export const Route = createLazyFileRoute("/admin/cars/$id")({
   component: CarsDetail,
-})
+});
 
 function CarsDetail() {
-  const { id } = Route.useParams()
-  const navigate = useNavigate()
+  const { id } = Route.useParams();
+  const navigate = useNavigate();
 
-  const { user } = useSelector((state) => state.auth)
+  const { user } = useSelector((state) => state.auth);
 
-  const [car, setCar] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [isNotFound, setIsNotFound] = useState(false)
+  const [car, setCar] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [isNotFound, setIsNotFound] = useState(false);
 
   useEffect(() => {
     const getCarDetailData = async (id) => {
-      setLoading(true)
-      const result = await getCarDetail(id)
+      setLoading(true);
+      const result = await getCarDetail(id);
       if (result?.success) {
-        setCar(result.data)
-        setIsNotFound(false)
+        setCar(result.data);
+        setIsNotFound(false);
       } else {
-        setIsNotFound(true)
+        setIsNotFound(true);
       }
-      setLoading(false)
-    }
+      setLoading(false);
+    };
 
     if (id) {
-      getCarDetailData(id)
+      getCarDetailData(id);
     }
-  }, [id])
+  }, [id]);
 
   if (loading) {
     return (
@@ -55,7 +55,7 @@ function CarsDetail() {
           <h1 className="text-center">Loading...</h1>
         </Col>
       </Row>
-    )
+    );
   }
 
   if (isNotFound) {
@@ -65,51 +65,51 @@ function CarsDetail() {
           <h1 className="text-center">Car is not found!</h1>
         </Col>
       </Row>
-    )
+    );
   }
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('id-ID', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }
+    return new Date(date).toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   const handleDelete = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     Swal.fire({
-      title: 'Confirm to delete',
-      text: 'Are you sure to delete this data?',
-      icon: 'warning',
+      title: "Confirm to delete",
+      text: "Are you sure to delete this data?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Yes',
-      confirmButtonColor: '#0d6efd',
-      cancelButtonText: 'No',
+      confirmButtonText: "Yes",
+      confirmButtonColor: "#0d6efd",
+      cancelButtonText: "No",
       reverseButtons: true,
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const deleteResult = await deleteCar(id)
+        const deleteResult = await deleteCar(id);
         if (deleteResult?.success) {
-          navigate({ to: '/cars' })
+          navigate({ to: "/admin/cars" });
         } else {
-          toast.error(deleteResult?.message)
+          toast.error(deleteResult?.message);
         }
       }
-    })
-  }
+    });
+  };
 
   return (
     <Container className="my-4 mx-0">
       <Breadcrumb>
         <Breadcrumb.Item>
-          <Link to="/">Home</Link>
+          <Link to="/admin">Home</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item>
-          <Link to="/cars">Cars</Link>
+          <Link to="/admin/cars">Cars</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item active>Detail</Breadcrumb.Item>
       </Breadcrumb>
@@ -122,7 +122,7 @@ function CarsDetail() {
                 <Col md={8}>
                   {/* manufacture name and model name */}
                   <Card.Title>
-                    {car?.models?.manufactures?.name} {car?.models?.name}{' '}
+                    {car?.models?.manufactures?.name} {car?.models?.name}{" "}
                   </Card.Title>
 
                   {/* car image */}
@@ -130,7 +130,7 @@ function CarsDetail() {
 
                   {/* rentPerDay */}
                   <Card.Title className="fs-5 mb-2 mt-4">
-                    Rp {car?.models?.rentPerDay?.toLocaleString('id-ID')} / Hari
+                    Rp {car?.models?.rentPerDay?.toLocaleString("id-ID")} / Hari
                   </Card.Title>
 
                   {/* type name */}
@@ -181,12 +181,12 @@ function CarsDetail() {
                 <Button
                   size="md"
                   className="py-2 px-5 bg-white rounded-0 fw-semibold"
-                  style={{ border: '1px solid #fa2c5a', color: '#fa2c5a' }}
+                  style={{ border: "1px solid #fa2c5a", color: "#fa2c5a" }}
                   onClick={handleDelete}
                 >
                   <FontAwesomeIcon
                     icon={faTrashCan}
-                    style={{ color: '#fa2c5a' }}
+                    style={{ color: "#fa2c5a" }}
                     className="me-2"
                   />
                   Delete
@@ -194,7 +194,7 @@ function CarsDetail() {
 
                 <Button
                   as={Link}
-                  to={`/cars/edit/${id}`}
+                  to={`/admin/cars/edit/${id}`}
                   className="py-2 px-5 bg-success rounded-0 fw-semibold text-white border-success"
                   size="md"
                 >
@@ -207,5 +207,5 @@ function CarsDetail() {
         </Col>
       </Row>
     </Container>
-  )
+  );
 }

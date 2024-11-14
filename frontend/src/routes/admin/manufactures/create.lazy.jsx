@@ -1,52 +1,52 @@
-import { createLazyFileRoute, useNavigate, Link } from '@tanstack/react-router'
-import { createManufacture } from '../../services/manufactures'
-import { useState } from 'react'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Form from 'react-bootstrap/Form'
-import Container from 'react-bootstrap/Container'
-import Button from 'react-bootstrap/Button'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
-import Card from 'react-bootstrap/Card'
-import Protected from '../../components/Auth/Protected'
+import { createLazyFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createManufacture } from "../../services/manufactures";
+import { useState } from "react";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
+import Container from "react-bootstrap/Container";
+import Button from "react-bootstrap/Button";
+import Breadcrumb from "react-bootstrap/Breadcrumb";
+import Card from "react-bootstrap/Card";
+import Protected from "../../components/Auth/Protected";
 
-export const Route = createLazyFileRoute('/admin/manufactures/create')({
+export const Route = createLazyFileRoute("/admin/manufactures/create")({
   component: () => (
     <Protected roles={[1]}>
       <CreateManufacture />
     </Protected>
   ),
-})
+});
 
 function CreateManufacture() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const [name, setName] = useState('')
-  const [country, setCountry] = useState('')
+  const [name, setName] = useState("");
+  const [country, setCountry] = useState("");
 
   const onSubmit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     const request = {
       name,
       country,
-    }
-    const result = await createManufacture(request)
+    };
+    const result = await createManufacture(request);
     if (result?.success) {
-      navigate({ to: '/manufactures' })
-      return
+      navigate({ to: "/manufactures" });
+      return;
     }
 
-    toast.error(result?.message)
-  }
+    toast.error(result?.message);
+  };
   return (
     <Container className="my-4">
       <Breadcrumb>
         <Breadcrumb.Item>
-          <Link to="/">Home</Link>
+          <Link to="/admin">Home</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item>
-          <Link to="/manufactures">Manufactures</Link>
+          <Link to="/admin/manufactures">Manufactures</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item active>Create</Breadcrumb.Item>
       </Breadcrumb>
@@ -100,5 +100,5 @@ function CreateManufacture() {
         </Col>
       </Row>
     </Container>
-  )
+  );
 }

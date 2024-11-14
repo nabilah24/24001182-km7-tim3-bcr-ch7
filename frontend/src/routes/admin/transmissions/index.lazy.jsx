@@ -1,43 +1,43 @@
-import Container from 'react-bootstrap/Container'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
-import Button from 'react-bootstrap/Button'
-import Col from 'react-bootstrap/Col'
-import Spinner from 'react-bootstrap/Spinner'
-import Table from 'react-bootstrap/Table'
-import Row from 'react-bootstrap/Row'
-import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import { createLazyFileRoute, Link } from '@tanstack/react-router'
-import { getTransmissions } from '../../../services/transmissions'
-import TransmissionItem from '../../../components/TransmissionItem'
-import { confirmAlert } from 'react-confirm-alert'
+import Container from "react-bootstrap/Container";
+import Breadcrumb from "react-bootstrap/Breadcrumb";
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Spinner from "react-bootstrap/Spinner";
+import Table from "react-bootstrap/Table";
+import Row from "react-bootstrap/Row";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { createLazyFileRoute, Link } from "@tanstack/react-router";
+import { getTransmissions } from "../../../services/transmissions";
+import TransmissionItem from "../../../components/TransmissionItem";
+import { confirmAlert } from "react-confirm-alert";
 
-export const Route = createLazyFileRoute('/admin/transmissions/')({
+export const Route = createLazyFileRoute("/admin/transmissions/")({
   component: IndexTransmission,
-})
+});
 
 function IndexTransmission() {
-  const { user, token } = useSelector((state) => state.auth)
+  const { user, token } = useSelector((state) => state.auth);
 
-  const [transmissions, setTransmissions] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [transmissions, setTransmissions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const getTransmissionData = async () => {
-      setIsLoading(true)
-      const result = await getTransmissions()
+      setIsLoading(true);
+      const result = await getTransmissions();
       if (result.success) {
-        setTransmissions(result.data)
+        setTransmissions(result.data);
       }
-      setIsLoading(false)
-    }
+      setIsLoading(false);
+    };
 
     if (token) {
-      getTransmissionData()
+      getTransmissionData();
     }
-  }, [token])
+  }, [token]);
 
   if (!token) {
     return (
@@ -48,7 +48,7 @@ function IndexTransmission() {
           </h1>
         </Col>
       </Row>
-    )
+    );
   }
 
   if (isLoading) {
@@ -60,14 +60,14 @@ function IndexTransmission() {
           </Spinner>
         </Col>
       </Row>
-    )
+    );
   }
 
   return (
     <Container className="my-4">
       <Breadcrumb>
         <Breadcrumb.Item>
-          <Link to="/">Home</Link>
+          <Link to="/admin">Home</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item active>Transmissions</Breadcrumb.Item>
       </Breadcrumb>
@@ -117,5 +117,5 @@ function IndexTransmission() {
         </Table>
       </div>
     </Container>
-  )
+  );
 }

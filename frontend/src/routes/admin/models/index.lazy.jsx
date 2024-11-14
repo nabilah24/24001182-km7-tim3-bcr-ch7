@@ -1,57 +1,57 @@
-import { useState, useEffect, useMemo } from 'react'
-import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { Breadcrumb, Button, Container, Row, Table } from 'react-bootstrap'
-import { useSelector } from 'react-redux'
-import { getModels } from '../../../services/models'
-import ModelTable from '../../../components/ModelTable'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useState, useEffect, useMemo } from "react";
+import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Breadcrumb, Button, Container, Row, Table } from "react-bootstrap";
+import { useSelector } from "react-redux";
+import { getModels } from "../../../services/models";
+import ModelTable from "../../../components/ModelTable";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export const Route = createLazyFileRoute('/admin/models/')({
+export const Route = createLazyFileRoute("/admin/models/")({
   component: ModelsIndex,
-})
+});
 
 function ModelsIndex() {
-  const { user, token } = useSelector((state) => state.auth)
+  const { user, token } = useSelector((state) => state.auth);
 
-  const [models, setModels] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [models, setModels] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getModelsData = async () => {
-      setLoading(true)
+      setLoading(true);
 
-      const result = await getModels()
+      const result = await getModels();
 
       if (result.success) {
-        setModels(result.data)
+        setModels(result.data);
       }
-      setLoading(false)
-    }
+      setLoading(false);
+    };
 
     // Check if there any token
     if (token) {
-      getModelsData()
+      getModelsData();
     } else {
-      navigate({ to: '/login' })
+      navigate({ to: "/login" });
     }
-  }, [navigate, token])
+  }, [navigate, token]);
 
   if (loading) {
     return (
       <Row className="mt-4">
         <h1>Loading...</h1>
       </Row>
-    )
+    );
   }
 
   return (
     <Container className="my-4">
       <Breadcrumb>
         <Breadcrumb.Item>
-          <Link to="/">Home</Link>
+          <Link to="/admin">Home</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item active>Models</Breadcrumb.Item>
       </Breadcrumb>
@@ -96,5 +96,5 @@ function ModelsIndex() {
         </tbody>
       </Table>
     </Container>
-  )
+  );
 }

@@ -1,89 +1,89 @@
-import { createLazyFileRoute, useNavigate, Link } from '@tanstack/react-router'
-import { useState, useEffect } from 'react'
-import Container from 'react-bootstrap/Container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Card from 'react-bootstrap/Card'
-import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
-import { getDetailTypeCar, updateTypeCar } from '../../../services/types'
-import { toast } from 'react-toastify'
-import Protected from '../../../components/Auth/Protected'
+import { createLazyFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/Card";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+import Breadcrumb from "react-bootstrap/Breadcrumb";
+import { getDetailTypeCar, updateTypeCar } from "../../../services/types";
+import { toast } from "react-toastify";
+import Protected from "../../../components/Auth/Protected";
 
-export const Route = createLazyFileRoute('/admin/types/edit/$id')({
+export const Route = createLazyFileRoute("/admin/types/edit/$id")({
   component: () => (
     <Protected roles={[1]}>
       <EditTypeCar />
     </Protected>
   ),
-})
+});
 
 function EditTypeCar() {
-  const { id } = Route.useParams()
-  const navigate = useNavigate()
+  const { id } = Route.useParams();
+  const navigate = useNavigate();
 
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [capacity, setCapacity] = useState('')
-  const [isNotFound, setIsNotFound] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [capacity, setCapacity] = useState("");
+  const [isNotFound, setIsNotFound] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getDetailTypeCarData = async (id) => {
-      setIsLoading(true)
-      const result = await getDetailTypeCar(id)
+      setIsLoading(true);
+      const result = await getDetailTypeCar(id);
       if (result?.success) {
-        setName(result.data?.name)
-        setDescription(result.data?.description)
-        setCapacity(result.data?.capacity)
-        setIsNotFound(false)
+        setName(result.data?.name);
+        setDescription(result.data?.description);
+        setCapacity(result.data?.capacity);
+        setIsNotFound(false);
       } else {
-        setIsNotFound(true)
+        setIsNotFound(true);
       }
-      setIsLoading(false)
-    }
+      setIsLoading(false);
+    };
 
     if (id) {
-      getDetailTypeCarData(id)
+      getDetailTypeCarData(id);
     }
-  }, [id])
+  }, [id]);
 
   if (isNotFound) {
-    navigate({ to: '/types' })
-    return
+    navigate({ to: "/types" });
+    return;
   }
 
   const onSubmit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     // Ensure capacity is a number
     const request = {
       name,
       description,
       capacity: parseInt(capacity, 10), // Convert to number
-    }
-    const result = await updateTypeCar(id, request)
+    };
+    const result = await updateTypeCar(id, request);
     if (result?.success) {
-      navigate({ to: `/types` })
-      toast.success('Car type edited successfully!')
-      return
+      navigate({ to: `/types` });
+      toast.success("Car type edited successfully!");
+      return;
     }
 
-    toast.error(result?.message)
-  }
+    toast.error(result?.message);
+  };
 
   return (
     <Container className="my-4">
       <Breadcrumb>
         <Breadcrumb.Item>
-          <Link to="/">Home</Link>
+          <Link to="/admin">Home</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item>
-          <Link to="/types">Types</Link>
+          <Link to="/admin/types">Types</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item>
-          <Link to={`/types/${id}`}>Detail</Link>
+          <Link to={`/admin/types/${id}`}>Detail</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item active>Edit</Breadcrumb.Item>
       </Breadcrumb>
@@ -106,7 +106,7 @@ function EditTypeCar() {
                       required
                       value={name}
                       onChange={(event) => {
-                        setName(event.target.value)
+                        setName(event.target.value);
                       }}
                     />
                   </Col>
@@ -150,5 +150,5 @@ function EditTypeCar() {
         </Col>
       </Row>
     </Container>
-  )
+  );
 }

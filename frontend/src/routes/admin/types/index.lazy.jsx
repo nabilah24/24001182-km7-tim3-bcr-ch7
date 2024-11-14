@@ -1,48 +1,48 @@
-import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
-import Container from 'react-bootstrap/Container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Table from 'react-bootstrap/Table'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
-import Pagination from 'react-bootstrap/Pagination'
-import Button from 'react-bootstrap/Button'
-import Spinner from 'react-bootstrap/Spinner'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import { getTypeCars } from '../../../services/types/index'
-import TypeItem from '../../../components/Type/typeItem'
+import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Table from "react-bootstrap/Table";
+import Breadcrumb from "react-bootstrap/Breadcrumb";
+import Pagination from "react-bootstrap/Pagination";
+import Button from "react-bootstrap/Button";
+import Spinner from "react-bootstrap/Spinner";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { getTypeCars } from "../../../services/types/index";
+import TypeItem from "../../../components/Type/typeItem";
 
-export const Route = createLazyFileRoute('/admin/types/')({
+export const Route = createLazyFileRoute("/admin/types/")({
   component: TypeIndex,
-})
+});
 
 function TypeIndex() {
-  const { user, token } = useSelector((state) => state.auth)
+  const { user, token } = useSelector((state) => state.auth);
 
-  const [types, setTypeCars] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [types, setTypeCars] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // State for pagination
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 5 // Tentukan jumlah item per halaman
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Tentukan jumlah item per halaman
 
   useEffect(() => {
     const getTypeCarData = async () => {
-      setIsLoading(true)
-      const result = await getTypeCars()
+      setIsLoading(true);
+      const result = await getTypeCars();
       if (result.success) {
-        const sortedTypes = result.data.sort((a, b) => a.id - b.id)
-        setTypeCars(sortedTypes)
+        const sortedTypes = result.data.sort((a, b) => a.id - b.id);
+        setTypeCars(sortedTypes);
       }
-      setIsLoading(false)
-    }
+      setIsLoading(false);
+    };
 
     if (token) {
-      getTypeCarData()
+      getTypeCarData();
     }
-  }, [token])
+  }, [token]);
 
   if (!token) {
     return (
@@ -53,7 +53,7 @@ function TypeIndex() {
           </h1>
         </Col>
       </Row>
-    )
+    );
   }
 
   if (isLoading) {
@@ -65,23 +65,23 @@ function TypeIndex() {
           </Spinner>
         </Col>
       </Row>
-    )
+    );
   }
 
   // Hitung total halaman dan item yang ditampilkan berdasarkan halaman
-  const totalPages = Math.ceil(types.length / itemsPerPage)
-  const indexOfLastItem = currentPage * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = types.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(types.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = types.slice(indexOfFirstItem, indexOfLastItem);
 
   // Fungsi untuk beralih halaman
-  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber)
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <Container className="my-4">
       <Breadcrumb>
         <Breadcrumb.Item>
-          <Link to="/">Home</Link>
+          <Link to="/admin">Home</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item active>Types</Breadcrumb.Item>
       </Breadcrumb>
@@ -153,5 +153,5 @@ function TypeIndex() {
         </Pagination>
       )}
     </Container>
-  )
+  );
 }
