@@ -2,19 +2,7 @@
 
 # TIM 3
 
-# Challenge 6
-
-Creating CRUD Models & Cars:
-
-- Ryan Nicholas Purba
-
-Creating CRUD Types:
-
-- Nabilah Zakiyah Salmaa Firdaus
-
-Creating CRUD Manufactures & Transmissions:
-
-- Ridhwan Tsalasah Putra
+# Challenge 7
 
 ------------------------TIM 3-----------------------------------
 
