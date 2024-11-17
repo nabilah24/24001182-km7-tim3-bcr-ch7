@@ -85,7 +85,7 @@ function Login() {
             <div className="text-body-secondary fs-5 fw-bold mb-3">
               BINAR CAR RENTAL
             </div>
-            <h4 className="fw-bold">Welcome, Admin BCR</h4>
+            <h4 className="fw-bold">Welcome</h4>
             <Form onSubmit={onSubmit}>
               <Form.Group
                 as={Row}

@@ -1,53 +1,21 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
+import { Navbar, Nav, Container, Button, Offcanvas } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { setToken, setUser } from "../../redux/slices/auth";
-import { profile } from "../../services/auth";
+import { setToken } from "../../redux/slices/auth";
 import Swal from "sweetalert2";
-import {
-  Container,
-  Dropdown,
-  Nav,
-  Navbar,
-  NavItem,
-  NavLink,
-  Image,
-} from "react-bootstrap";
+import { useLocation } from "@tanstack/react-router"; // Import useLocation
 
-const UserNavBar = () => {
+const UserNavbar = () => {
+  const [isSolid, setIsSolid] = useState(false);
+
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const { user, token } = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    const getProfile = async () => {
-      // fetch get profile
-      const result = await profile();
-      if (result.success) {
-        // set the user state here
-        dispatch(setUser(result.data));
-        return;
-      }
-
-      // If not success
-      // delete the local storage here
-      dispatch(setUser(null));
-      dispatch(setToken(null));
-
-      // redirect to login
-      navigate({ to: "/login" });
-    };
-
-    if (token) {
-      // hit api auth get profile and pass the token to the function
-      getProfile();
-    }
-  }, [dispatch, navigate, token]);
+  const { token } = useSelector((state) => state.auth); // Ambil token dari Redux (atau state global)
+  const navigate = useNavigate(); // Menambahkan hook navigate untuk redirect
+  const location = useLocation(); // Menggunakan hook useLocation untuk mendapatkan path saat ini
 
   const logout = (event) => {
     event.preventDefault();
-
     Swal.fire({
       title: "Confirm to log out",
       text: "Are you sure you want to log out?",
@@ -59,77 +27,145 @@ const UserNavBar = () => {
       reverseButtons: true,
     }).then(async (result) => {
       if (result.isConfirmed) {
-        // delete the local storage here
-        dispatch(setUser(null));
+        // Menghapus token dari state dan localStorage
         dispatch(setToken(null));
 
-        // redirect to login
-        navigate({ to: "/login" });
+        // Redirect ke halaman login
+        navigate("/login");
       }
     });
   };
 
+  // Memeriksa scroll dan mengubah navbar style
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsSolid(true); // Navbar solid jika scroll lebih dari 50px
+      } else {
+        setIsSolid(false); // Navbar transparent jika scroll kurang dari 50px
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const navStyles = {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    transition: "background-color 0.3s ease",
+  };
+
+  const transparentStyles = {
+    backgroundColor: "transparent",
+  };
+
+  const solidStyles = {
+    backgroundColor: "#fff",
+    boxShadow: "0 0 4px #151515",
+  };
+
+  const customOffcanvas = {
+    "--bs-offcanvas-width": "200px",
+  };
+
+  const titleStyles = {
+    fontSize: "14px",
+    fontWeight: "700",
+    lineHeight: "20px",
+    color: "#151515",
+  };
+
+  const navItemStyles = {
+    fontSize: "14px",
+    fontWeight: "400",
+    lineHeight: "20px",
+    color: "#151515",
+  };
+
+  const buttonStyles = {
+    backgroundColor: "#5cb85f",
+    border: "none",
+    borderRadius: "3px",
+    color: "#fff",
+    fontSize: "14px",
+    fontWeight: "700",
+    lineHeight: "20px",
+    padding: "8px 12px",
+  };
+
+  // Cek jika halaman saat ini adalah register
+  if (location.pathname === "/register") {
+    return null; // Tidak render navbar di halaman register
+  }
+
   return (
-    <>
-      <Navbar
-        collapseOnSelect
-        expand="lg"
-        className="bg-body-primary shadow-sm"
-      >
-        <Container>
-          <div className="text-body-secondary fs-4 fw-bold ">
-            BINAR CAR RENTAL
-          </div>
-          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-          <Navbar.Collapse id="responsive-navbar-nav">
-            <Nav className="me-auto">
-              {/* 
-                {user && user?.role_id === 1 && (
-                  <Nav.Link as={Link} to="/students/create">
-                      Create Student
+    <Navbar
+      expand="lg"
+      fixed="top"
+      style={{
+        ...navStyles,
+        ...(isSolid ? solidStyles : transparentStyles),
+      }}
+    >
+      <Container>
+        <Navbar.Brand href="#">
+          <svg
+            width="100"
+            height="34"
+            viewBox="0 0 100 34"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="100" height="34" fill="#0D28A6" />
+          </svg>
+        </Navbar.Brand>
+        <Navbar.Toggle aria-controls="offcanvasNavbar" />
+        <Navbar.Offcanvas
+          id="offcanvasNavbar"
+          aria-labelledby="offcanvasNavbarLabel"
+          placement="end"
+          style={customOffcanvas}
+        >
+          <Offcanvas.Header closeButton>
+            <Offcanvas.Title id="offcanvasNavbarLabel" style={titleStyles}>
+              BCR
+            </Offcanvas.Title>
+          </Offcanvas.Header>
+          <Offcanvas.Body>
+            <Nav className="ms-auto">
+              {["Our Services", "Why Us", "Testimonial", "FAQ"].map(
+                (item, index) => (
+                  <Nav.Link
+                    key={index}
+                    href={`#${item.toLowerCase().replace(" ", "-")}`}
+                    style={navItemStyles}
+                  >
+                    {item}
                   </Nav.Link>
-                )} 
-              */}
-            </Nav>
-            <Nav>
-              {user ? (
-                <>
-                  <Nav.Link as={Link} to="/profile">
-                    <Image
-                      src={user?.profilePicture}
-                      fluid
-                      style={{
-                        width: "30px",
-                        height: "30px",
-                        display: "inline-block",
-                        overflow: "hidden",
-                        borderRadius: "50%",
-                      }}
-                    />
-                  </Nav.Link>
-                  <Dropdown as={NavItem} id="nav-dropdown">
-                    <Dropdown.Toggle as={NavLink}>{user?.name}</Dropdown.Toggle>
-                    <Dropdown.Menu>
-                      <Dropdown.Item>
-                        <Nav.Link as={Link} to="/profile">
-                          Profile
-                        </Nav.Link>
-                      </Dropdown.Item>
-                      <Dropdown.Item>
-                        <Nav.Link onClick={logout}>Logout</Nav.Link>
-                      </Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </>
-              ) : (
-                <></>
+                )
               )}
+              <Nav.Item>
+                {token ? (
+                  <Button onClick={logout} style={buttonStyles}>
+                    Logout
+                  </Button>
+                ) : (
+                  <Button href="/register" style={buttonStyles}>
+                    Register
+                  </Button>
+                )}
+              </Nav.Item>
             </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-    </>
+          </Offcanvas.Body>
+        </Navbar.Offcanvas>
+      </Container>
+    </Navbar>
   );
 };
 
-export default UserNavBar;
+export default UserNavbar;
