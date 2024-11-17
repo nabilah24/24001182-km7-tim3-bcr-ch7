@@ -56,39 +56,39 @@ const HeroSection = () => {
 
   return (
     <section style={heroStyles.section}>
-      {/* <div className="container"> */}
-      <div className="row d-flex align-items-center justify-content-center">
-        <div className="col-md-6 text-lg-start">
-          <h1 style={heroStyles.heading}>
-            Sewa & Rental Mobil Terbaik di kawasan (Lokasimu)
-          </h1>
-          <p style={heroStyles.paragraph}>
-            Selamat datang di Binar Car Rental. Kami menyediakan mobil kualitas
-            terbaik dengan harga terjangkau. Selalu siap melayani kebutuhanmu
-            untuk sewa mobil selama 24 jam.
-          </p>
-          <button
-            onClick={handleButtonClick}
-            style={heroStyles.button}
-            className="me-3"
-            onMouseOver={(e) => {
-              e.target.style.backgroundColor = "#fff"; // light gray
-              e.target.style.color = "#5cb85f"; // lime green
-            }}
-            onMouseOut={(e) => {
-              e.target.style.backgroundColor = "#5cb85f"; // lime green
-              e.target.style.color = "#fff"; // light gray
-              e.target.style.border = "1px solid #5cb85f"
-            }}
-          >
-            Mulai Sewa Mobil
-          </button>
-        </div>
-        <div className="col-md-6 text-lg-end">
-          <img src="/img/car.png" alt="Hero Car" style={heroStyles.image} />
+      <div className="container">
+        <div className="row d-flex align-items-center justify-content-center">
+          <div className="col-md-6 text-lg-start">
+            <h1 style={heroStyles.heading}>
+              Sewa & Rental Mobil Terbaik di kawasan (Lokasimu)
+            </h1>
+            <p style={heroStyles.paragraph}>
+              Selamat datang di Binar Car Rental. Kami menyediakan mobil
+              kualitas terbaik dengan harga terjangkau. Selalu siap melayani
+              kebutuhanmu untuk sewa mobil selama 24 jam.
+            </p>
+            <button
+              onClick={handleButtonClick}
+              style={heroStyles.button}
+              className="me-3"
+              onMouseOver={(e) => {
+                e.target.style.backgroundColor = "#fff"; // light gray
+                e.target.style.color = "#5cb85f"; // lime green
+              }}
+              onMouseOut={(e) => {
+                e.target.style.backgroundColor = "#5cb85f"; // lime green
+                e.target.style.color = "#fff"; // light gray
+                e.target.style.border = "1px solid #5cb85f";
+              }}
+            >
+              Mulai Sewa Mobil
+            </button>
+          </div>
+          <div className="col-md-6 text-lg-end">
+            <img src="/img/car.png" alt="Hero Car" style={heroStyles.image} />
+          </div>
         </div>
       </div>
-      {/* </div> */}
     </section>
   );
 };
