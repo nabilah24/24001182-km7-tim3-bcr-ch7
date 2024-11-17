@@ -38,8 +38,14 @@ function Login() {
       // set token to global state
       dispatch(setToken(data?.token))
 
-      // redirect to home
-      navigate({ to: '/admin' })
+// Check roleId and redirect accordingly
+      if (data?.roleId === 1) {
+        navigate({ to: '/admin' }); // Redirect to admin page
+      } else if (data?.roleId === 2) {
+        navigate({ to: '/' }); // Redirect to user home page
+      } else {
+        toast.error('Role is not recognized');
+      }
     },
     onError: (err) => {
       toast.error(err?.message)

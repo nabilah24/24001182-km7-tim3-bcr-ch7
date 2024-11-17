@@ -1,17 +1,52 @@
-import { useNavigate, useLocation } from "@tanstack/react-router";
+import { useNavigate, useLocation, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { Navbar, Nav, Container, Button, Offcanvas } from "react-bootstrap";
+import {
+  Navbar,
+  Nav,
+  Container,
+  Button,
+  Offcanvas,
+  Image,
+  Dropdown,
+  NavLink,
+  NavItem,
+} from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { setToken } from "../../redux/slices/auth";
+import { setToken, setUser } from "../../redux/slices/auth";
+import { profile } from "../../services/auth";
 import Swal from "sweetalert2";
+import { useQuery } from "@tanstack/react-query";
 
 const UserNavbar = () => {
   const [isSolid, setIsSolid] = useState(false);
 
   const dispatch = useDispatch();
-  const { token } = useSelector((state) => state.auth); // Ambil token dari Redux (atau state global)
-  const navigate = useNavigate(); // Menambahkan hook navigate untuk redirect
-  const location = useLocation(); // Menggunakan hook useLocation untuk mendapatkan path saat ini
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user, token } = useSelector((state) => state.auth); // Ambil user dan token dari Redux
+
+  // React Query untuk mendapatkan profil user jika token ada
+  const { data, isSuccess, isError } = useQuery({
+    queryKey: ["profile"],
+    queryFn: profile,
+    enabled: !!token,
+  });
+
+  // Update Redux state jika data berhasil diambil
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(setUser(data));
+    } else if (isError) {
+      handleLogout(); // Logout otomatis jika ada error
+    }
+  }, [isSuccess, isError, data, dispatch]);
+
+  // Logout handler
+  const handleLogout = () => {
+    dispatch(setUser(null));
+    dispatch(setToken(null));
+    navigate("/login");
+  };
 
   const logout = (event) => {
     event.preventDefault();
@@ -24,82 +59,27 @@ const UserNavbar = () => {
       confirmButtonColor: "#0d6efd",
       cancelButtonText: "No",
       reverseButtons: true,
-    }).then(async (result) => {
+    }).then((result) => {
       if (result.isConfirmed) {
-        // Menghapus token dari state dan localStorage
-        dispatch(setToken(null));
-
-        // Redirect ke halaman login
-        navigate("/login");
+        handleLogout();
       }
     });
   };
 
-  // Memeriksa scroll dan mengubah navbar style
+  // Memeriksa scroll untuk mengubah navbar style
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setIsSolid(true); // Navbar solid jika scroll lebih dari 50px
-      } else {
-        setIsSolid(false); // Navbar transparent jika scroll kurang dari 50px
-      }
+      setIsSolid(window.scrollY > 50);
     };
-
     window.addEventListener("scroll", handleScroll);
-
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
-  const navStyles = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    transition: "background-color 0.3s ease",
-  };
-
-  const transparentStyles = {
-    backgroundColor: "transparent",
-  };
-
-  const solidStyles = {
-    backgroundColor: "#fff",
-    boxShadow: "0 0 4px #151515",
-  };
-
-  const customOffcanvas = {
-    "--bs-offcanvas-width": "200px",
-  };
-
-  const titleStyles = {
-    fontSize: "14px",
-    fontWeight: "700",
-    lineHeight: "20px",
-    color: "#151515",
-  };
-
-  const navItemStyles = {
-    fontSize: "14px",
-    fontWeight: "400",
-    lineHeight: "20px",
-    color: "#151515",
-  };
-
-  const buttonStyles = {
-    backgroundColor: "#5cb85f",
-    border: "none",
-    borderRadius: "3px",
-    color: "#fff",
-    fontSize: "14px",
-    fontWeight: "700",
-    lineHeight: "20px",
-    padding: "8px 12px",
-  };
-
-  // Cek jika halaman saat ini adalah register
+  // Jika di halaman register, sembunyikan navbar
   if (location.pathname === "/register") {
-    return null; // Tidak render navbar di halaman register
+    return null;
   }
 
   return (
@@ -107,8 +87,12 @@ const UserNavbar = () => {
       expand="lg"
       fixed="top"
       style={{
-        ...navStyles,
-        ...(isSolid ? solidStyles : transparentStyles),
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        transition: "background-color 0.3s ease",
+        backgroundColor: isSolid ? "#fff" : "transparent",
+        boxShadow: isSolid ? "0 0 4px #151515" : "none",
       }}
     >
       <Container>
@@ -128,10 +112,10 @@ const UserNavbar = () => {
           id="offcanvasNavbar"
           aria-labelledby="offcanvasNavbarLabel"
           placement="end"
-          style={customOffcanvas}
+          style={{ "--bs-offcanvas-width": "200px" }}
         >
           <Offcanvas.Header closeButton>
-            <Offcanvas.Title id="offcanvasNavbarLabel" style={titleStyles}>
+            <Offcanvas.Title id="offcanvasNavbarLabel" style={{ fontWeight: 700, fontSize: "14px" }}>
               BCR
             </Offcanvas.Title>
           </Offcanvas.Header>
@@ -143,21 +127,49 @@ const UserNavbar = () => {
                     className="active"
                     key={index}
                     href={`#${item.toLowerCase().replace(" ", "-")}`}
-                    style={navItemStyles}
+                    style={{ fontWeight: 400, fontSize: "14px", color: "#151515" }}
                   >
                     {item}
                   </Nav.Link>
                 )
               )}
               <Nav.Item>
-                {token ? (
-                  <Button onClick={logout} style={buttonStyles}>
-                    Logout
-                  </Button>
+                {user ? (
+                  <>
+                    <Dropdown as={NavItem} id="nav-dropdown">
+                    <Dropdown.Toggle as={NavLink}><Image
+                      src={user?.profilePicture}
+                      fluid
+                      style={{
+                        width: "30px",
+                        height: "30px",
+                        display: "inline-block",
+                        overflow: "hidden",
+                        borderRadius: "50%",
+                      }}
+                    /></Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      <Dropdown.Item>
+                        <Nav.Link as={Link} to="/profile">
+                          Profile
+                        </Nav.Link>
+                      </Dropdown.Item>
+                      <Dropdown.Item>
+                        <Nav.Link onClick={logout}>Logout</Nav.Link>
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                  </>
                 ) : (
-                  <Button href="/register" style={buttonStyles}>
+                  <>
+                  <Button as={Link} to="/register" style={{ backgroundColor: "#5cb85f", color: "#fff" }}>
                     Register
                   </Button>
+       
+                  <Button as={Link} to="/login" style={{ backgroundColor: "#5cb85f", color: "#fff" }}>
+                      Login
+                  </Button>
+                  </>
                 )}
               </Nav.Item>
             </Nav>
