@@ -32,10 +32,10 @@ export const Route = createRootRoute({
               </>
             ) : (
               <>
-                <Container>
+                {/* <Container> */}
                   <UserNavBar />
                   <Outlet />
-                </Container>
+                {/* </Container> */}
               </>
             )}
           </>
