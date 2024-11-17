@@ -11,11 +11,11 @@ import {
   Spinner,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { getUsers } from "../../services/users";
-import { getCars } from "../../services/cars";
-import { getModels } from "../../services/models";
-import { getManufactures } from "../../services/manufactures";
-import { getTransmissions } from "../../services/transmissions";
+import { useQuery } from "@tanstack/react-query";
+import { getCars } from "../../services/cars"; 
+import { getModels } from "../../services/models"; 
+import { getManufactures } from "../../services/manufactures"; 
+import { getTransmissions } from "../../services/transmissions"; 
 import { getTypeCars } from "../../services/types";
 import {
   faCarSide,
@@ -37,63 +37,41 @@ export const Route = createLazyFileRoute("/admin/")({
 
 function Dashboard() {
   const navigate = useNavigate();
-  const { user, token } = useSelector((state) => state.auth);
-
-  const [users, setUsers] = useState([]);
-  const [cars, setCars] = useState([]);
-  const [models, setModels] = useState([]);
-  const [manufactures, setManufactures] = useState([]);
-  const [transmissions, setTransmissions] = useState([]);
-  const [types, setTypeCars] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const { token } = useSelector((state) => state.auth);
 
   // State for pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5; // Tentukan jumlah item per halaman
+  const itemsPerPage = 5; // Define the number of items per page
+
+  // Fetching data using TanStack Query v5
+  const { data: cars = [], isLoading: loadingCars } = useQuery({ 
+    queryKey: ['cars'], 
+    queryFn: ()=> getCars(),
+  });
+  const { data: models = [] } = useQuery({ 
+    queryKey: ['models'], 
+    queryFn: ()=> getModels(), 
+  });
+  const { data: manufactures = [] } = useQuery({ 
+    queryKey: ['manufactures'], 
+    queryFn: getManufactures, 
+  });
+  const { data: transmissions = [] } = useQuery({ 
+    queryKey: ['transmissions'], 
+    queryFn: getTransmissions, 
+  });
+  const { data: types = [] } = useQuery({ 
+    queryKey: ['types'], 
+    queryFn: ()=>getTypeCars(), 
+  });
 
   useEffect(() => {
-    const getAllData = async () => {
-      setIsLoading(true);
-      try {
-        const [
-          userData,
-          carData,
-          modelData,
-          manufactureData,
-          transmissionData,
-          typeData,
-        ] = await Promise.all([
-          getUsers(),
-          getCars(),
-          getModels(),
-          getManufactures(),
-          getTransmissions(),
-          getTypeCars(),
-        ]);
-
-        setUsers(userData.data || []); // Ensure it's an array
-        setCars(carData.data || []); // Ensure it's an array
-        setModels(modelData.data || []); // Ensure it's an array
-        setManufactures(manufactureData.data || []); // Ensure it's an array
-        setTransmissions(transmissionData.data || []); // Ensure it's an array
-        setTypeCars(typeData.data || []); // Ensure it's an array
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (token) {
-      getAllData();
+    if (!token) {
+      navigate({ to: "/login" });
     }
-  }, [token]);
+  }, [token, navigate]);
 
-  if (!token) {
-    navigate({ to: "/login" });
-  }
-
-  if (isLoading) {
+  if (loadingCars) {
     return (
       <Row className="mt-5">
         <Col className="text-center">
@@ -113,7 +91,7 @@ function Dashboard() {
     return data.slice(indexOfFirstItem, indexOfLastItem);
   };
 
-  // Fungsi untuk beralih halaman
+  // Function to switch pages
   const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
@@ -121,73 +99,6 @@ function Dashboard() {
       <div className="d-flex mb-3 flex-column flex-md-row justify-content-between align-items-center">
         <h4 className="fw-bold mb-md-0">Dashboard</h4>
       </div>
-
-      {/* List Users */}
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mt-5">
-        <h5 className="fw-bold mb-2 mb-md-0">
-          <FontAwesomeIcon
-            icon={faUsers}
-            style={{ color: "#0d6efd" }}
-            className="me-2"
-          />
-          List Users
-        </h5>
-      </div>
-      <div className="table-responsive mt-4">
-        <Table bordered hover className="mb-0">
-          <thead className="text-center">
-            <tr>
-              <th>No</th>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Created At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginate(users).length === 0 ? (
-              <tr>
-                <td colSpan={6} className="text-center">
-                  <strong>Data is not found!</strong>
-                </td>
-              </tr>
-            ) : (
-              paginate(users).map((user, index) => (
-                <tr key={user.id}>
-                  <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                  <td>{user.name}</td>
-                  <td>{user.email}</td>
-                  <td>{user.createdAt}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </Table>
-      </div>
-
-      {/* Pagination for Users */}
-      {users.length > 0 && (
-        <Pagination className="mt-4 justify-content-center">
-          <Pagination.Prev
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          />
-          {[...Array(Math.ceil(users.length / itemsPerPage)).keys()].map(
-            (number) => (
-              <Pagination.Item
-                key={number + 1}
-                active={currentPage === number + 1}
-                onClick={() => handlePageChange(number + 1)}
-              >
-                {number + 1}
-              </Pagination.Item>
-            )
-          )}
-          <Pagination.Next
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === Math.ceil(users.length / itemsPerPage)}
-          />
-        </Pagination>
-      )}
 
       {/* List Cars */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4">
@@ -280,7 +191,7 @@ function Dashboard() {
         </Pagination>
       )}
 
-      {/* List Cars */}
+      {/* List Models */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4">
         <h5 className="fw-bold mb-3 mb-md-0">
           <FontAwesomeIcon
@@ -326,14 +237,14 @@ function Dashboard() {
         </Table>
       </div>
 
-      {/* Pagination for Cars */}
-      {cars.length > 0 && (
+      {/* Pagination for Models */}
+      {models.length > 0 && (
         <Pagination className="mt-4 justify-content-center">
           <Pagination.Prev
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           />
-          {[...Array(Math.ceil(cars.length / itemsPerPage)).keys()].map(
+          {[...Array(Math.ceil(models.length / itemsPerPage)).keys()].map(
             (number) => (
               <Pagination.Item
                 key={number + 1}
@@ -346,14 +257,14 @@ function Dashboard() {
           )}
           <Pagination.Next
             onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === Math.ceil(cars.length / itemsPerPage)}
+            disabled={currentPage === Math.ceil(models.length / itemsPerPage)}
           />
         </Pagination>
       )}
 
       {/* List Manufactures */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-center">
-        <h5 className="fw-bold mb-3 mb-md-0">
+        <h5 className="fw -bold mb-3 mb-md-0">
           <FontAwesomeIcon
             icon={faIndustry}
             style={{ color: "#0d6efd" }}
@@ -376,7 +287,7 @@ function Dashboard() {
           <tbody>
             {paginate(manufactures).length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center">
+                <td colSpan={5} className="text-center">
                   <strong>Data is not found!</strong>
                 </td>
               </tr>
@@ -395,7 +306,7 @@ function Dashboard() {
         </Table>
       </div>
 
-      {/* Pagination for Users */}
+      {/* Pagination for Manufactures */}
       {manufactures.length > 0 && (
         <Pagination className="mt-4 justify-content-center">
           <Pagination.Prev
@@ -415,9 +326,7 @@ function Dashboard() {
           )}
           <Pagination.Next
             onClick={() => handlePageChange(currentPage + 1)}
-            disabled={
-              currentPage === Math.ceil(manufactures.length / itemsPerPage)
-            }
+            disabled={currentPage === Math.ceil(manufactures.length / itemsPerPage)}
           />
         </Pagination>
       )}
@@ -468,29 +377,27 @@ function Dashboard() {
         </Table>
       </div>
 
-      {/* Pagination for Users */}
+      {/* Pagination for Transmissions */}
       {transmissions.length > 0 && (
         <Pagination className="mt-4 justify-content-center">
           <Pagination.Prev
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           />
-          {[
-            ...Array(Math.ceil(transmissions.length / itemsPerPage)).keys(),
-          ].map((number) => (
-            <Pagination.Item
-              key={number + 1}
-              active={currentPage === number + 1}
-              onClick={() => handlePageChange(number + 1)}
-            >
-              {number + 1}
-            </Pagination.Item>
-          ))}
+          {[...Array(Math.ceil(transmissions.length / itemsPerPage)).keys()].map(
+            (number) => (
+              <Pagination.Item
+                key={number + 1}
+                active={currentPage === number + 1}
+                onClick={() => handlePageChange(number + 1)}
+              >
+                {number + 1}
+              </Pagination.Item>
+            )
+          )}
           <Pagination.Next
             onClick={() => handlePageChange(currentPage + 1)}
-            disabled={
-              currentPage === Math.ceil(transmissions.length / itemsPerPage)
-            }
+            disabled ={currentPage === Math.ceil(transmissions.length / itemsPerPage)}
           />
         </Pagination>
       )}
@@ -519,7 +426,7 @@ function Dashboard() {
             </tr>
           </thead>
           <tbody>
-            {paginate(manufactures).length === 0 ? (
+            {paginate(types).length === 0 ? (
               <tr>
                 <td colSpan={6} className="text-center">
                   <strong>Data is not found!</strong>
@@ -541,7 +448,7 @@ function Dashboard() {
         </Table>
       </div>
 
-      {/* Pagination for Users */}
+      {/* Pagination for Types */}
       {types.length > 0 && (
         <Pagination className="mt-4 justify-content-center">
           <Pagination.Prev

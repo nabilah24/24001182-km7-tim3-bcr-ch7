@@ -7,15 +7,23 @@ import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
 import Button from "react-bootstrap/Button";
-import { deleteTransmission } from "../../services/transmissions";
-import { getDetailTransmission } from "../../services/transmissions";
+import { 
+  deleteTransmission, 
+  getDetailTransmission } 
+from "../../../services/transmissions";
 import { toast } from "react-toastify";
 import { confirmAlert } from "react-confirm-alert";
 import { useSelector } from "react-redux";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import Swal from "sweetalert2";
+import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/transmissions/$id")({
-  component: TransmissionDetail,
+  component: () => (
+    <Protected roles={[1]}>
+      <TransmissionDetail />
+    </Protected>
+  ),
 });
 
 function TransmissionDetail() {
@@ -25,28 +33,32 @@ function TransmissionDetail() {
   const { user } = useSelector((state) => state.auth);
 
   const [transmission, setTransmission] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isNotFound, setIsNotFound] = useState(false);
+
+
+  // Use react query to fetch API
+  const { data, isSuccess, isPending, isError } = useQuery({
+    queryKey: ["transmissions", id],
+    queryFn: () => getDetailTransmission(id),
+    enabled: !!id,
+  });
+
+  const { mutate: deleting, isPending: isDeleteProcessing } = useMutation({
+    mutationFn: () => deleteTransmission(id),
+    onSuccess: () => {
+        navigate({ to: "/admin/transmissions" });
+    },
+    onError: (error) => {
+        toast.error(error?.message);
+    },
+  });
 
   useEffect(() => {
-    const getDetailTransmissionData = async (id) => {
-      setIsLoading(true);
-      const result = await getDetailTransmission(id);
-      if (result?.success) {
-        setTransmission(result.data);
-        setIsNotFound(false);
-      } else {
-        setIsNotFound(true);
-      }
-      setIsLoading(false);
-    };
-
-    if (id) {
-      getDetailTransmissionData(id);
+    if (isSuccess) {
+      setTransmission(data);
     }
-  }, [id]);
-
-  if (isLoading) {
+  }, [data, isSuccess]);
+  
+  if (isPending) {
     return (
       <Row className="mt-5">
         <Col className="text-center">
@@ -58,7 +70,7 @@ function TransmissionDetail() {
     );
   }
 
-  if (isNotFound) {
+  if (isError) {
     return (
       <Row className="mt-5">
         <Col>
@@ -82,7 +94,7 @@ function TransmissionDetail() {
       reverseButtons: true,
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const deleteResult = await deleteTransmission(id);
+        const deleteResult = deleting(id);
         if (deleteResult?.success) {
           navigate({ to: "/admin/transmissions" });
         } else {
@@ -126,6 +138,7 @@ function TransmissionDetail() {
               {user?.roleId === 1 && (
                 <Button
                   onClick={onDelete}
+                  disabled={isDeleteProcessing}
                   variant="danger"
                   className="px-5 py-2 mt-2"
                 >

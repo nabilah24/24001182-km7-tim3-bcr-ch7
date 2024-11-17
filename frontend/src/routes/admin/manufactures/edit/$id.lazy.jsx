@@ -2,8 +2,10 @@ import { createLazyFileRoute, useNavigate, Link } from '@tanstack/react-router'
 import {
   updateManufacture,
   getDetailManufacture,
-} from '../../../services/manufactures'
+} from '../../../../services/manufactures'
 import { useState, useEffect } from 'react'
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { toast } from 'react-toastify';
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
@@ -11,7 +13,7 @@ import Container from 'react-bootstrap/Container'
 import Button from 'react-bootstrap/Button'
 import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import Card from 'react-bootstrap/Card'
-import Protected from '../../../components/Auth/Protected'
+import Protected from '../../../../components/Auth/Protected'
 
 export const Route = createLazyFileRoute('/admin/manufactures/edit/$id')({
   component: () => (
@@ -27,32 +29,37 @@ function EditManufacture() {
 
   const [name, setName] = useState('')
   const [country, setCountry] = useState('')
-  const [isNotFound, setIsNotFound] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+
+  // Use react query to fetch API
+  const { data, isSuccess, isError } = useQuery({
+    queryKey: ["manufactures", id],
+    queryFn: () => getDetailManufacture(id),
+    enabled: !!id,
+  });
 
   useEffect(() => {
-    const getDetailManufactureData = async (id) => {
-      setIsLoading(true)
-      const result = await getDetailManufacture(id)
-      if (result?.success) {
-        setName(result.data?.name)
-        setCountry(result.data?.country)
-        setIsNotFound(false)
-      } else {
-        setIsNotFound(true)
-      }
-      setIsLoading(false)
-    }
+    if (isSuccess && data) {
+       setName(data.name)
+       setCountry(data.country)
+     }
+ }, [isSuccess, data])
 
-    if (id) {
-      getDetailManufactureData(id)
-    }
-  }, [id])
-
-  if (isNotFound) {
+  if (isError) {
     navigate({ to: '/manufactures' })
     return
   }
+
+  // Adjust mutation function to include id correctly
+  const { mutate: updateManufactureData } = useMutation({
+    mutationFn: (manufacture) => updateManufacture(id, manufacture), // Pass id from useParams
+    onSuccess: () => {
+        toast.success("Manufacture updated successfully!");
+        navigate({ to: `/admin/manufactures` });
+    },
+    onError: (err) => {
+        toast.error(err?.message);
+    },
+  });
 
   const onSubmit = async (event) => {
     event.preventDefault()
@@ -61,13 +68,8 @@ function EditManufacture() {
       name,
       country,
     }
-    const result = await updateManufacture(id, request)
-    if (result?.success) {
-      navigate({ to: '/manufactures' })
-      return
-    }
-
-    toast.error(result?.message)
+    
+    updateManufactureData(request);
   }
   return (
     <Container className="my-4">

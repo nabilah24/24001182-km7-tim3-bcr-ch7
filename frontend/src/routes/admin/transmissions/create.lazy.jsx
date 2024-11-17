@@ -1,6 +1,8 @@
 import { createLazyFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { createTransmission } from "../../services/transmissions";
+import { createTransmission } from "../../../services/transmissions";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from 'react-toastify';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
@@ -8,7 +10,7 @@ import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Breadcrumb from "react-bootstrap/Breadcrumb";
 import Card from "react-bootstrap/Card";
-import Protected from "../../components/Auth/Protected";
+import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/transmissions/create")({
   component: () => (
@@ -25,6 +27,17 @@ function CreateTransmission() {
   const [driveType, setDriveType] = useState("");
   const [description, setDescription] = useState("");
 
+  const { mutate: createTransmissionData } = useMutation({
+    mutationFn: (transmission) => createTransmission(transmission),
+    onSuccess: () => {
+        toast.success("Transmission created successfully!");
+        navigate({ to: "/admin/transmissions" });
+    },
+    onError: (err) => {
+        toast.error(err?.message);
+    },
+  });
+
   const onSubmit = async (event) => {
     event.preventDefault();
 
@@ -33,13 +46,8 @@ function CreateTransmission() {
       driveType,
       description,
     };
-    const result = await createTransmission(request);
-    if (result?.success) {
-      navigate({ to: "/transmissions" });
-      return;
-    }
-
-    toast.error(result?.message);
+    
+    createTransmissionData(request);
   };
   return (
     <Container className="my-4">

@@ -2,9 +2,10 @@ import { createLazyFileRoute, useNavigate, Link } from '@tanstack/react-router'
 import {
   updateTransmission,
   getDetailTransmission,
-} from '../../../services/transmissions'
+} from '../../../../services/transmissions'
 import { toast } from 'react-toastify'
 import { useState, useEffect } from 'react'
+import { useQuery, useMutation } from "@tanstack/react-query";
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
@@ -12,7 +13,7 @@ import Container from 'react-bootstrap/Container'
 import Button from 'react-bootstrap/Button'
 import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import Card from 'react-bootstrap/Card'
-import Protected from '../../../components/Auth/Protected'
+import Protected from '../../../../components/Auth/Protected'
 
 export const Route = createLazyFileRoute('/admin/transmissions/edit/$id')({
   component: () => (
@@ -29,33 +30,38 @@ function EditTransmission() {
   const [name, setName] = useState('')
   const [driveType, setDriveType] = useState('')
   const [description, setDescription] = useState('')
-  const [isNotFound, setIsNotFound] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+
+  // Use react query to fetch API
+  const { data, isSuccess, isError } = useQuery({
+    queryKey: ["transmissions", id],
+    queryFn: () => getDetailTransmission(id),
+    enabled: !!id,
+  });
 
   useEffect(() => {
-    const getDetailTransmissionData = async (id) => {
-      setIsLoading(true)
-      const result = await getDetailTransmission(id)
-      if (result?.success) {
-        setName(result.data?.name)
-        setDriveType(result.data?.driveType)
-        setDescription(result.data?.description)
-        setIsNotFound(false)
-      } else {
-        setIsNotFound(true)
+     if (isSuccess && data) {
+        setName(data.name)
+        setDriveType(data.driveType)
+        setDescription(data.description)
       }
-      setIsLoading(false)
-    }
+  }, [isSuccess, data])
 
-    if (id) {
-      getDetailTransmissionData(id)
-    }
-  }, [id])
-
-  if (isNotFound) {
-    navigate({ to: '/transmissions' })
+  if (isError) {
+    navigate({ to: '/admin/transmissions' })
     return
   }
+
+  // Adjust mutation function to include id correctly
+  const { mutate: updateTransmissionData } = useMutation({
+    mutationFn: (transmission) => updateTransmission(id, transmission), // Pass id from useParams
+    onSuccess: () => {
+        toast.success("Transmission updated successfully!");
+        navigate({ to: `/admin/transmissions` });
+    },
+    onError: (err) => {
+        toast.error(err?.message);
+    },
+  });
 
   const onSubmit = async (event) => {
     event.preventDefault()
@@ -64,14 +70,9 @@ function EditTransmission() {
       name,
       driveType,
       description,
-    }
-    const result = await updateTransmission(id, request)
-    if (result?.success) {
-      navigate({ to: '/transmissions' })
-      return
-    }
-
-    toast.error(result?.message)
+    };
+    
+    updateTransmissionData(request);
   }
   return (
     <Container className="my-4">

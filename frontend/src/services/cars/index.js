@@ -23,7 +23,11 @@ export const getCars = async (plate, available, availableAt) => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const getCarDetail = async (id) => {
@@ -40,7 +44,11 @@ export const getCarDetail = async (id) => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const createCar = async (request) => {
@@ -69,9 +77,13 @@ export const createCar = async (request) => {
     body: formData,
   });
 
-  // get the data if fetching succeed!
+  // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const updateCar = async (id, request) => {
@@ -100,9 +112,13 @@ export const updateCar = async (id, request) => {
     body: formData,
   });
 
-  // get the data if fetching succeed!
+  // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const deleteCar = async (id) => {
@@ -119,5 +135,9 @@ export const deleteCar = async (id) => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };

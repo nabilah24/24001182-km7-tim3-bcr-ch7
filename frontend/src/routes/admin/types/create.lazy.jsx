@@ -1,15 +1,16 @@
-import { createLazyFileRoute, useNavigate, Link } from '@tanstack/react-router'
-import { toast } from 'react-toastify'
-import { useState } from 'react'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Card from 'react-bootstrap/Card'
-import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button'
-import Container from 'react-bootstrap/Container'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
-import { createTypeCar } from '../../services/types'
-import Protected from '../../components/Auth/Protected'
+import { createLazyFileRoute, useNavigate, Link } from '@tanstack/react-router';
+import { toast } from 'react-toastify';
+import { useState } from 'react';
+import { useMutation } from "@tanstack/react-query";
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Card from 'react-bootstrap/Card';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
+import Breadcrumb from 'react-bootstrap/Breadcrumb';
+import { createTypeCar } from '../../../services/types';
+import Protected from '../../../components/Auth/Protected';
 
 export const Route = createLazyFileRoute('/admin/types/create')({
   component: () => (
@@ -26,6 +27,17 @@ function CreateTypeCar() {
   const [description, setDescription] = useState('')
   const [capacity, setCapacity] = useState('')
 
+  const { mutate: createTypeData } = useMutation({
+    mutationFn: (type) => createTypeCar(type),
+    onSuccess: () => {
+        toast.success("Type created successfully!");
+        navigate({ to: "/admin/types" });
+    },
+    onError: (err) => {
+        toast.error(err?.message);
+    },
+  });
+
   const onSubmit = async (event) => {
     event.preventDefault()
 
@@ -36,14 +48,7 @@ function CreateTypeCar() {
       capacity: parseInt(capacity, 10), // Convert to number
     }
 
-    const result = await createTypeCar(request)
-    if (result?.success) {
-      navigate({ to: '/types' })
-      toast.success('Car type created successfully!')
-      return
-    }
-
-    toast.error(result?.message)
+    createTypeData(request);
   }
 
   return (

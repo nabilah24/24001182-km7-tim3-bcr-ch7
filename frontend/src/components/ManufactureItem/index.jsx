@@ -17,7 +17,7 @@ const ManufactureItem = ({ manufacture }) => {
         <ButtonGroup>
           <Button
             as={Link}
-            href={`/manufactures/${manufacture?.id}`}
+            href={`/admin/manufactures/${manufacture?.id}`}
             variant="primary"
             className="me-2"
           >
@@ -26,7 +26,7 @@ const ManufactureItem = ({ manufacture }) => {
           {user?.roleId === 1 && (
             <Button
               as={Link}
-              href={`/manufactures/edit/${manufacture?.id}`}
+              href={`/admin/manufactures/edit/${manufacture?.id}`}
               variant="warning"
               className="me-2"
             >

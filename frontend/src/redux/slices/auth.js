@@ -28,7 +28,9 @@ export const authSlice = createSlice({
 // Export the actions and reducer
 export const { setUser, setToken } = authSlice.actions;
 
-export default authSlice.reducer; // -> module.exports = authSlice.reducer;
+export default authSlice.reducer; 
+
+// -> module.exports = authSlice.reducer;
 
 /*
   analogy in useState hook:

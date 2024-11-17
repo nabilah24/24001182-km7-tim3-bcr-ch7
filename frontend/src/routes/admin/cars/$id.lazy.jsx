@@ -15,9 +15,15 @@ import {
   Card,
   Button,
 } from "react-bootstrap";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/cars/$id")({
-  component: CarsDetail,
+  component: () => (
+    <Protected roles={[1]}>
+      <CarsDetail />
+    </Protected>
+  ),
 });
 
 function CarsDetail() {
@@ -27,28 +33,31 @@ function CarsDetail() {
   const { user } = useSelector((state) => state.auth);
 
   const [car, setCar] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [isNotFound, setIsNotFound] = useState(false);
+
+  // Use react query to fetch API
+  const { data, isSuccess, isPending, isError } = useQuery({
+    queryKey: ["cars", id],
+    queryFn: () => getCarDetail(id),
+    enabled: !!id,
+  });
+
+  const { mutate: deleting, isPending: isDeleteProcessing } = useMutation({
+    mutationFn: () => deleteCar(id),
+    onSuccess: () => {
+        navigate({ to: "/admin/cars" });
+    },
+    onError: (error) => {
+        toast.error(error?.message);
+    },
+  });
 
   useEffect(() => {
-    const getCarDetailData = async (id) => {
-      setLoading(true);
-      const result = await getCarDetail(id);
-      if (result?.success) {
-        setCar(result.data);
-        setIsNotFound(false);
-      } else {
-        setIsNotFound(true);
-      }
-      setLoading(false);
-    };
-
-    if (id) {
-      getCarDetailData(id);
+    if (isSuccess) {
+      setCar(data);
     }
-  }, [id]);
+  }, [data, isSuccess]);
 
-  if (loading) {
+  if (isPending) {
     return (
       <Row className="mt-5">
         <Col>
@@ -58,7 +67,7 @@ function CarsDetail() {
     );
   }
 
-  if (isNotFound) {
+  if (isError) {
     return (
       <Row className="mt-5">
         <Col>
@@ -92,7 +101,7 @@ function CarsDetail() {
       reverseButtons: true,
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const deleteResult = await deleteCar(id);
+        const deleteResult = deleting(id);
         if (deleteResult?.success) {
           navigate({ to: "/admin/cars" });
         } else {

@@ -5,6 +5,7 @@ import AdminNavBar from "../components/AdminNavBar"; // Navbar untuk Admin
 import UserNavBar from "../components/UserNavBar"; // Navbar untuk Pengguna biasa
 import SideBar from "../components/SideBar"; // Sidebar untuk Admin
 import { useSelector } from "react-redux";
+import { ToastContainer } from "react-toastify";
 
 export const Route = createRootRoute({
   component: () => {
@@ -42,6 +43,9 @@ export const Route = createRootRoute({
           <Outlet />
         )}
         <TanStackRouterDevtools />
+
+        {/* React Toastify */}
+        <ToastContainer theme="colored" />
       </>
     );
   },

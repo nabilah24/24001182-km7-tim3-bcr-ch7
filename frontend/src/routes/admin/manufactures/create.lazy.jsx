@@ -1,6 +1,8 @@
 import { createLazyFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { createManufacture } from "../../services/manufactures";
+import { createManufacture } from "../../../services/manufactures";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from 'react-toastify';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
@@ -8,7 +10,7 @@ import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Breadcrumb from "react-bootstrap/Breadcrumb";
 import Card from "react-bootstrap/Card";
-import Protected from "../../components/Auth/Protected";
+import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/manufactures/create")({
   component: () => (
@@ -24,6 +26,17 @@ function CreateManufacture() {
   const [name, setName] = useState("");
   const [country, setCountry] = useState("");
 
+  const { mutate: createManufactureData } = useMutation({
+    mutationFn: (manufacture) => createManufacture(manufacture),
+    onSuccess: () => {
+        toast.success("Manufacture created successfully!");
+        navigate({ to: "/admin/manufacture" });
+    },
+    onError: (err) => {
+        toast.error(err?.message);
+    },
+  });
+
   const onSubmit = async (event) => {
     event.preventDefault();
 
@@ -31,13 +44,8 @@ function CreateManufacture() {
       name,
       country,
     };
-    const result = await createManufacture(request);
-    if (result?.success) {
-      navigate({ to: "/manufactures" });
-      return;
-    }
 
-    toast.error(result?.message);
+    createManufactureData(request);
   };
   return (
     <Container className="my-4">
