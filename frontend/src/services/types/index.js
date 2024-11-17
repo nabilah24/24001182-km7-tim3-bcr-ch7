@@ -1,12 +1,14 @@
 export const getTypeCars = async (name) => {
   const token = localStorage.getItem("token");
-  let params;
+  let params = {};
+
+  // Tambahkan parameter jika ada nilai
   if (name) {
     params.name = name;
   }
-  let url = 
-  `${import.meta.env.VITE_API_URL}/types` +
-  new URLSearchParams(params);
+
+  // Cek apakah params memiliki nilai, jika ada, buat query string
+  const url = `${import.meta.env.VITE_API_URL}/types` + new URLSearchParams(params);
 
   const response = await fetch(url, {
     headers: {
@@ -17,7 +19,11 @@ export const getTypeCars = async (name) => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const getDetailTypeCar = async (id) => {
@@ -33,7 +39,11 @@ export const getDetailTypeCar = async (id) => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const createTypeCar = async (request) => {
@@ -52,9 +62,13 @@ export const createTypeCar = async (request) => {
     body: formData,
   });
 
-  // get the data if fetching succeed!
+  // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const updateTypeCar = async (id, request) => {
@@ -92,5 +106,9 @@ export const deleteTypeCar = async (id) => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 }

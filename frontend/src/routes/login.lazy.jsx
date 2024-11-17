@@ -1,5 +1,5 @@
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
@@ -10,50 +10,55 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { setToken } from "../redux/slices/auth";
 import { login } from "../services/auth";
+import { useMutation } from '@tanstack/react-query'
 
 export const Route = createLazyFileRoute("/login")({
   component: Login,
 });
 
 function Login() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
 
-  const { token } = useSelector((state) => state.auth);
+  const { token } = useSelector((state) => state.auth)
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
-  useEffect(() => {
-    // get token from local storage
-    if (token) {
-      navigate({ to: "/" });
-    }
-  }, [navigate, token]);
+  if (token) {
+    navigate({ to: '/admin' })
+  }
+
+  // Mutation is used for POST, PUT, PATCH and DELETE
+  const { mutate: loginUser } = useMutation({
+    mutationFn: (body) => {
+      return login(body)
+    },
+    onSuccess: (data) => {
+      // set token to global state
+      dispatch(setToken(data?.token))
+
+      // redirect to home
+      navigate({ to: '/admin' })
+    },
+    onError: (err) => {
+      toast.error(err?.message)
+    },
+  })
 
   const onSubmit = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
     /* hit the login API */
     // define the request body
     const body = {
       email,
       password,
-    };
-
-    // hit the login API with the data
-    const result = await login(body);
-    if (result.success) {
-      // set token to global state
-      dispatch(setToken(result.data.token));
-
-      // redirect to home
-      navigate({ to: "/" });
-      return;
     }
 
-    toast.error(result?.message);
-  };
+    // hit the login API with the data
+    loginUser(body)
+  }
 
   return (
     <Container fluid className="d-flex vh-80 p-0">

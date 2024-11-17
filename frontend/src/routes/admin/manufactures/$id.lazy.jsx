@@ -12,10 +12,16 @@ import { getDetailManufacture } from "../../../services/manufactures";
 import { toast } from "react-toastify";
 import { confirmAlert } from "react-confirm-alert";
 import { useSelector } from "react-redux";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import Swal from "sweetalert2";
+import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/manufactures/$id")({
-  component: ManufactureDetail,
+  component: () => (
+    <Protected roles={[1]}>
+      <ManufactureDetail />
+    </Protected>
+  ),
 });
 
 function ManufactureDetail() {
@@ -25,28 +31,31 @@ function ManufactureDetail() {
   const { user } = useSelector((state) => state.auth);
 
   const [manufacture, setManufacture] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isNotFound, setIsNotFound] = useState(false);
+
+  // Use react query to fetch API
+  const { data, isSuccess, isPending, isError } = useQuery({
+    queryKey: ["manufactures", id],
+    queryFn: () => getDetailManufacture(id),
+    enabled: !!id,
+  });
+
+  const { mutate: deleting, isPending: isDeleteProcessing } = useMutation({
+    mutationFn: () => deleteManufacture(id),
+    onSuccess: () => {
+        navigate({ to: "/admin/manufactures" });
+    },
+    onError: (error) => {
+        toast.error(error?.message);
+    },
+  });
 
   useEffect(() => {
-    const getDetailManufactureData = async (id) => {
-      setIsLoading(true);
-      const result = await getDetailManufacture(id);
-      if (result?.success) {
-        setManufacture(result.data);
-        setIsNotFound(false);
-      } else {
-        setIsNotFound(true);
-      }
-      setIsLoading(false);
-    };
-
-    if (id) {
-      getDetailManufactureData(id);
+    if (isSuccess) {
+      setManufacture(data);
     }
-  }, [id]);
+  }, [data, isSuccess]);
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <Row className="mt-5">
         <Col className="text-center">
@@ -58,7 +67,7 @@ function ManufactureDetail() {
     );
   }
 
-  if (isNotFound) {
+  if (isError) {
     return (
       <Row className="mt-5">
         <Col>
@@ -82,7 +91,7 @@ function ManufactureDetail() {
       reverseButtons: true,
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const deleteResult = await deleteManufacture(id);
+        const deleteResult = deleting(id);
         if (deleteResult?.success) {
           navigate({ to: "/admin/manufactures" });
         } else {
@@ -99,7 +108,7 @@ function ManufactureDetail() {
           <Link to="/admin">Home</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item>
-          <Link to="/manufactures">Manufactures</Link>
+          <Link to="/admin/manufactures">Manufactures</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item active>Detail</Breadcrumb.Item>
       </Breadcrumb>
@@ -124,6 +133,7 @@ function ManufactureDetail() {
                 <Button
                   onClick={onDelete}
                   variant="danger"
+                  disabled={isDeleteProcessing}
                   className="px-5 py-2 mt-2"
                 >
                   Delete

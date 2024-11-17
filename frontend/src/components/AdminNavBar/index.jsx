@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setToken, setUser } from "../../redux/slices/auth";
 import { profile } from "../../services/auth";
@@ -13,6 +13,8 @@ import {
   NavLink,
   Image,
 } from "react-bootstrap";
+import { useQuery } from "@tanstack/react-query";
+
 
 const AdminNavBar = () => {
   const dispatch = useDispatch();
@@ -20,53 +22,33 @@ const AdminNavBar = () => {
 
   const { user, token } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    const getProfile = async () => {
-      // fetch get profile
-      const result = await profile();
-      if (result.success) {
-        // set the user state here
-        dispatch(setUser(result.data));
-        return;
-      }
-
-      // If not success
+  const handleLogout = useCallback(() => {
       // delete the local storage here
       dispatch(setUser(null));
       dispatch(setToken(null));
 
       // redirect to login
       navigate({ to: "/login" });
-    };
+  }, [dispatch, navigate]);
 
-    if (token) {
-      // hit api auth get profile and pass the token to the function
-      getProfile();
-    }
-  }, [dispatch, navigate, token]);
+  // Use react query to fetch API
+  const { data, isSuccess, isError } = useQuery({
+      queryKey: ["profile"],
+      queryFn: () => profile(),
+      enabled: token ? true : false,
+  });
+
+  useEffect(() => {
+      if (isSuccess) {
+          dispatch(setUser(data));
+      } else if (isError) {
+          handleLogout();
+      }
+  }, [isSuccess, isError, data, dispatch, handleLogout]);
 
   const logout = (event) => {
-    event.preventDefault();
-
-    Swal.fire({
-      title: "Confirm to log out",
-      text: "Are you sure you want to log out?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes",
-      confirmButtonColor: "#0d6efd",
-      cancelButtonText: "No",
-      reverseButtons: true,
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        // delete the local storage here
-        dispatch(setUser(null));
-        dispatch(setToken(null));
-
-        // redirect to login
-        navigate({ to: "/login" });
-      }
-    });
+      event.preventDefault();
+      handleLogout();
   };
 
   return (

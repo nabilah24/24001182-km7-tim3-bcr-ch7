@@ -11,7 +11,11 @@ export const getManufactures = async () => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const getDetailManufacture = async (id) => {
@@ -28,7 +32,11 @@ export const getDetailManufacture = async (id) => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const createManufacture = async (request) => {
@@ -46,9 +54,13 @@ export const createManufacture = async (request) => {
       body: formData,
   });
 
-  // get the data if fetching succeed!
+  // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const updateManufacture = async (id, request) => {
@@ -66,9 +78,13 @@ export const updateManufacture = async (id, request) => {
       body: formData,
   });
 
-  // get the data if fetching succeed!
+  // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const deleteManufacture = async (id) => {
@@ -85,5 +101,9 @@ export const deleteManufacture = async (id) => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };

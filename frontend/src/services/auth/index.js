@@ -7,9 +7,13 @@ export const login = async (request) => {
     },
   });
 
-  // get the data if fetching succeed!
+  // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const register = async (request) => {
@@ -27,9 +31,13 @@ export const register = async (request) => {
     }
   );
 
-  // get the data if fetching succeed!
+  // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const profile = async () => {
@@ -41,44 +49,52 @@ export const profile = async () => {
     method: "GET",
   });
 
-  // get data
-  const result = await response.json();
-  return result;
-};
-
-export const getUsers = async (name) => {
-  const token = localStorage.getItem("token");
-
-  // Inisialisasi params sebagai objek kosong
-  let params = {};
-  if (name) {
-    params.name = name;
-  }
-
-  // Buat URL dengan parameter query jika ada
-  const url = `${import.meta.env.VITE_API_URL}?${new URLSearchParams(params)}`;
-
-  try {
-    const response = await fetch(url, {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-      method: "GET",
-    });
-
-    // Cek apakah respons sukses
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    // get data
+    const result = await response.json();
+    if (!result?.success) {
+        throw new Error(result?.message);
     }
 
-    // Dapatkan data
-    const result = await response.json();
-    return result;
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    return { error: "Failed to fetch users" };
-  }
+    return result?.data;
 };
+
+// export const getUsers = async (name) => {
+//   const token = localStorage.getItem("token");
+
+//   // Inisialisasi params sebagai objek kosong
+//   let params = {};
+//   if (name) {
+//     params.name = name;
+//   }
+
+//   // Buat URL dengan parameter query jika ada
+//   const url = `${import.meta.env.VITE_API_URL}?${new URLSearchParams(params)}`;
+
+//   try {
+//     const response = await fetch(url, {
+//       headers: {
+//         authorization: `Bearer ${token}`,
+//       },
+//       method: "GET",
+//     });
+
+//     // Cek apakah respons sukses
+//     if (!response.ok) {
+//       throw new Error(`HTTP error! status: ${response.status}`);
+//     }
+
+//    // get data
+//    const result = await response.json();
+//    if (!result?.success) {
+//        throw new Error(result?.message);
+//    }
+ 
+//    return result?.data;
+//   } catch (error) {
+//     console.error("Error fetching users:", error);
+//     return { error: "Failed to fetch users" };
+//   }
+// };
 
 
 

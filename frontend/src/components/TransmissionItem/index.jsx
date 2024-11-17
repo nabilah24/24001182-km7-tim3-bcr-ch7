@@ -18,7 +18,7 @@ const TransmissionItem = ({ transmission }) => {
         <ButtonGroup>
           <Button
             as={Link}
-            href={`/transmissions/${transmission?.id}`}
+            href={`/admin/transmissions/${transmission?.id}`}
             variant="primary"
             className="me-2"
           >
@@ -27,7 +27,7 @@ const TransmissionItem = ({ transmission }) => {
           {user?.roleId === 1 && (
             <Button
               as={Link}
-              href={`/transmissions/edit/${transmission?.id}`}
+              href={`/admin/transmissions/edit/${transmission?.id}`}
               variant="warning"
               className="me-2"
             >

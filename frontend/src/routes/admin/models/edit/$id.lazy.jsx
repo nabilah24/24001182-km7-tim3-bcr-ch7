@@ -1,10 +1,10 @@
 import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { getManufactures } from "../../../services/manufactures";
-import { getTransmissions } from "../../../services/transmissions";
-import { getModelDetail, updateModel } from "../../../services/models";
+import { getManufactures } from "../../../../services/manufactures";
+import { getTransmissions } from "../../../../services/transmissions";
+import { getModelDetail, updateModel } from "../../../../services/models";
 import { toast } from "react-toastify";
-import Protected from "../../../components/Auth/Protected";
+import Protected from "../../../../components/Auth/Protected";
 import {
   Breadcrumb,
   Container,
@@ -14,6 +14,7 @@ import {
   Form,
   Button,
 } from "react-bootstrap";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/admin/models/edit/$id")({
   component: () => (
@@ -28,59 +29,57 @@ function EditModel() {
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
-  const [manufactures, setManufactures] = useState([]);
   const [manufactureId, setManufactureId] = useState(0);
-  const [transmissions, setTransmissions] = useState([]);
   const [transmissionId, setTransmissionId] = useState(0);
   const [year, setYear] = useState(null);
   const [rentPerDay, setRentPerDay] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isNotFound, setIsNotFound] = useState(false);
+
+  const { data: manufactures } = useQuery({
+    queryKey: ['manufactures'],
+    queryFn: getManufactures,
+    enabled: !!id,
+  })
+
+  const { data: transmissions } = useQuery({
+    queryKey: ['transmissions'],
+    queryFn: getTransmissions,
+    enabled: !!id,
+  })
+
+  // Use react query to fetch API
+  const { data, isSuccess, isError } = useQuery({
+    queryKey: ["models", id],
+    queryFn: () => getModelDetail(id),
+    enabled: !!id,
+  });
+
+  // Adjust mutation function to include id correctly
+  const { mutate: updateModelData, isPending: isUpdateProcessing } = useMutation({
+    mutationFn: (model) => updateModel(id, model), // Pass id from useParams
+    onSuccess: () => {
+        toast.success("Model updated successfully!");
+        navigate({ to: `/admin/models` });
+    },
+    onError: (err) => {
+        toast.error(err?.message);
+    },
+  });
 
   useEffect(() => {
-    const getManufacturesData = async () => {
-      const result = await getManufactures();
-      if (result?.success) {
-        setManufactures(result?.data);
-      }
-    };
-    const getTransmissionsData = async () => {
-      const result = await getTransmissions();
-      if (result?.success) {
-        setTransmissions(result?.data);
-      }
-    };
+    if (isSuccess && data) {
+      setName(data.name);
+      setManufactureId(data.manufactureId);
+      setTransmissionId(data.transmissionId);
+      setYear(data.year);
+      setRentPerDay(data.rentPerDay);
+     }
+ }, [isSuccess, data])
 
-    getManufacturesData();
-    getTransmissionsData();
-  }, []);
-
-  useEffect(() => {
-    const getModelDetailData = async (id) => {
-      setLoading(true);
-      const result = await getModelDetail(id);
-      if (result?.success) {
-        setName(result.data.name);
-        setManufactureId(result.data.manufactureId);
-        setTransmissionId(result.data.transmissionId);
-        setYear(result.data.year);
-        setRentPerDay(result.data.rentPerDay);
-        setIsNotFound(false);
-      } else {
-        setIsNotFound(true);
-      }
-      setLoading(false);
-    };
-
-    if (id) {
-      getModelDetailData(id);
-    }
-  }, [id]);
-
-  if (isNotFound) {
-    navigate({ to: "/models" });
-    return;
-  }
+ if (isError) {
+   navigate({ to: '/admin/models' })
+   return
+ }
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -92,13 +91,7 @@ function EditModel() {
       year,
       rentPerDay,
     };
-    const result = await updateModel(id, request);
-    if (result?.success) {
-      navigate({ to: `/models/${id}` });
-      return;
-    }
-
-    toast.error(result?.message);
+    updateModelData(request)
   };
 
   return (
@@ -157,8 +150,8 @@ function EditModel() {
                       <option disabled value="selected">
                         Select Manufacture
                       </option>
-                      {!loading &&
-                        manufactures.length > 0 &&
+                      {!isUpdateProcessing && manufactures &&
+                        manufactures?.length > 0 &&
                         manufactures.map((manufacture) => (
                           <option
                             key={manufacture?.id}
@@ -189,8 +182,8 @@ function EditModel() {
                       <option disabled value="selected">
                         Select Transmission
                       </option>
-                      {!loading &&
-                        transmissions.length > 0 &&
+                      {!isUpdateProcessing && transmissions &&
+                        transmissions?.length > 0 &&
                         transmissions.map((transmission) => (
                           <option
                             key={transmission?.id}

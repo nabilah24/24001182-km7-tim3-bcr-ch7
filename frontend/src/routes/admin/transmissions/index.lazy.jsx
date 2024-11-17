@@ -12,33 +12,35 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { getTransmissions } from "../../../services/transmissions";
 import TransmissionItem from "../../../components/TransmissionItem";
+import { useQuery } from "@tanstack/react-query";
 import { confirmAlert } from "react-confirm-alert";
+import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/transmissions/")({
-  component: IndexTransmission,
+  component: () => (
+    <Protected roles={[1]}>
+      <IndexTransmission />
+    </Protected>
+  ),
 });
 
 function IndexTransmission() {
   const { user, token } = useSelector((state) => state.auth);
 
   const [transmissions, setTransmissions] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+
+  const { data, isSuccess, isPending } = useQuery({
+    queryKey: ["transmissions"],
+    queryFn: () => getTransmissions(),
+    enabled: !!token,
+  });
 
   useEffect(() => {
-    const getTransmissionData = async () => {
-      setIsLoading(true);
-      const result = await getTransmissions();
-      if (result.success) {
-        setTransmissions(result.data);
-      }
-      setIsLoading(false);
-    };
-
-    if (token) {
-      getTransmissionData();
+    if (isSuccess) {
+      setTransmissions(data)
     }
-  }, [token]);
-
+  }, [data, isSuccess])
+  
   if (!token) {
     return (
       <Row className="mt-4">
@@ -51,7 +53,7 @@ function IndexTransmission() {
     );
   }
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <Row className="mt-5">
         <Col className="text-center">
@@ -76,7 +78,7 @@ function IndexTransmission() {
         {user?.roleId === 1 && (
           <Button
             as={Link}
-            href={`/transmissions/create`}
+            href={`/admin/transmissions/create`}
             variant="primary"
             className="rounded-0"
           >

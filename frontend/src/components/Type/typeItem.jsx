@@ -19,7 +19,7 @@ const TypeItem = ({ type, index }) => {
         <ButtonGroup>
           <Button
             as={Link}
-            to={`/types/${type?.id}`}
+            to={`/admin/types/${type?.id}`}
             variant="primary"
             className="me-2"
           >
@@ -29,7 +29,7 @@ const TypeItem = ({ type, index }) => {
           {user?.roleId === 1 && (
             <Button
               as={Link}
-              to={`/types/edit/${type?.id}`}
+              to={`/admin/types/edit/${type?.id}`}
               variant="warning"
               className="me-2"
             >

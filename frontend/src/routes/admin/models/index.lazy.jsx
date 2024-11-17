@@ -1,48 +1,47 @@
 import { useState, useEffect, useMemo } from "react";
 import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Breadcrumb, Button, Container, Row, Table } from "react-bootstrap";
+import { Breadcrumb, Button, Container, Row, Table, Col, Spinner } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { getModels } from "../../../services/models";
 import ModelTable from "../../../components/ModelTable";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useQuery } from "@tanstack/react-query";
+import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/models/")({
-  component: ModelsIndex,
+  component: () => (
+    <Protected roles={[1]}>
+      <ModelsIndex />
+    </Protected>
+  ),
 });
 
 function ModelsIndex() {
   const { user, token } = useSelector((state) => state.auth);
 
   const [models, setModels] = useState([]);
-  const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
+  const { data, isSuccess, isPending } = useQuery({
+    queryKey: ["models"],
+    queryFn: () => getModels(),
+    enabled: !!token,
+  });
 
   useEffect(() => {
-    const getModelsData = async () => {
-      setLoading(true);
-
-      const result = await getModels();
-
-      if (result.success) {
-        setModels(result.data);
-      }
-      setLoading(false);
-    };
-
-    // Check if there any token
-    if (token) {
-      getModelsData();
-    } else {
-      navigate({ to: "/login" });
+    if (isSuccess) {
+      setModels(data)
     }
-  }, [navigate, token]);
+  }, [data, isSuccess])
 
-  if (loading) {
+  if (isPending) {
     return (
-      <Row className="mt-4">
-        <h1>Loading...</h1>
+      <Row className="mt-5">
+        <Col className="text-center">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden"></span>
+          </Spinner>
+        </Col>
       </Row>
     );
   }
@@ -66,7 +65,7 @@ function ModelsIndex() {
               variant="primary"
               className="rounded-0"
               as={Link}
-              to="/models/create"
+              to="/admin/models/create"
             >
               <FontAwesomeIcon icon={faPlus} className="me-3" />
               <span>Create Model</span>
