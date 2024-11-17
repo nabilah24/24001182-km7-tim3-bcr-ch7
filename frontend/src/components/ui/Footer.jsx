@@ -54,7 +54,7 @@ const FooterSection = () => {
           </div>
           <div className="col-lg-3 col-md-6 align-items-end justify-content-end">
             <a
-              href="#service"
+              href="#our-services"
               className="btn btn-link mb-1 mt-0"
               style={footerStyles.link}
             >

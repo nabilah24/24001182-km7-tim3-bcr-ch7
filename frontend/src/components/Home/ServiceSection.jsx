@@ -44,7 +44,7 @@ const ServiceSection = () => {
     <section
       style={serviceStyles.section}
       className="service-section"
-      id="service"
+      id="our-services"
     >
       <div className="container">
         <div className="row g-5 d-flex align-items-center">

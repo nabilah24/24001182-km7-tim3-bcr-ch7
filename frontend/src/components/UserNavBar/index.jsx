@@ -1,10 +1,9 @@
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useLocation } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Navbar, Nav, Container, Button, Offcanvas } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { setToken } from "../../redux/slices/auth";
 import Swal from "sweetalert2";
-import { useLocation } from "@tanstack/react-router"; // Import useLocation
 
 const UserNavbar = () => {
   const [isSolid, setIsSolid] = useState(false);
@@ -141,6 +140,7 @@ const UserNavbar = () => {
               {["Our Services", "Why Us", "Testimonial", "FAQ"].map(
                 (item, index) => (
                   <Nav.Link
+                    className="active"
                     key={index}
                     href={`#${item.toLowerCase().replace(" ", "-")}`}
                     style={navItemStyles}
