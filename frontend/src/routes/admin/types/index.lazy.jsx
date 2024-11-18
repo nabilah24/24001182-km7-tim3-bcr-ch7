@@ -12,7 +12,8 @@ import Spinner from "react-bootstrap/Spinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { getTypeCars } from "../../../services/types/index";
-import TypeItem from "../../../components/Admin/Type/typeItem";
+import { useQuery } from "@tanstack/react-query";
+import TypeItem from "../../../components/Type/typeItem";
 import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/types/")({
@@ -27,27 +28,23 @@ function TypeIndex() {
   const { user, token } = useSelector((state) => state.auth);
 
   const [types, setTypeCars] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
 
   // State for pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5; // Tentukan jumlah item per halaman
 
-  useEffect(() => {
-    const getTypeCarData = async () => {
-      setIsLoading(true);
-      const result = await getTypeCars();
-      if (result.success) {
-        const sortedTypes = result.data.sort((a, b) => a.id - b.id);
-        setTypeCars(sortedTypes);
-      }
-      setIsLoading(false);
-    };
+  const { data, isSuccess, isPending } = useQuery({
+    queryKey: ["types"],
+    queryFn: () => getTypeCars(),
+    enabled: !!token,
+  });
 
-    if (token) {
-      getTypeCarData();
+  useEffect(() => {
+    if (isSuccess) {
+      const sortedTypes = data.sort((a, b) => a.id - b.id);
+      setTypeCars(sortedTypes);
     }
-  }, [token]);
+  }, [data, isSuccess]);
 
   if (!token) {
     return (
@@ -61,7 +58,7 @@ function TypeIndex() {
     );
   }
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <Row className="mt-5">
         <Col className="text-center">
@@ -95,7 +92,7 @@ function TypeIndex() {
         {user?.roleId === 1 && (
           <Button
             as={Link}
-            href={`/types/create`}
+            href={`/admin/types/create`}
             variant="primary"
             className="rounded-0"
           >

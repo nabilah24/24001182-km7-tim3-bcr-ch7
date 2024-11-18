@@ -48,21 +48,21 @@ function HeroSection() {
 
         {/* Links Column */}
         <Col lg={3} md={6} className="d-flex flex-column justify-content-end">
-          <Link to="index.html#service" className="text-decoration-none">
+          <Link to="/#our-services" className="text-decoration-none">
             <FontAwesomeIcon icon={faChevronRight} className="me-2" /> Our
             Service
           </Link>
           <br />
-          <Link to="index.html#why-us" className="text-decoration-none">
+          <Link to="/#why-us" className="text-decoration-none">
             <FontAwesomeIcon icon={faChevronRight} className="me-2" /> Why Us
           </Link>
           <br />
-          <Link to="index.html#testimonial" className="text-decoration-none">
+          <Link to="/#testimonial" className="text-decoration-none">
             <FontAwesomeIcon icon={faChevronRight} className="me-2" />{" "}
             Testimonial
           </Link>
           <br />
-          <Link to="index.html#faq" className="text-decoration-none">
+          <Link to="/#faq" className="text-decoration-none">
             <FontAwesomeIcon icon={faChevronRight} className="me-2" /> FAQ
           </Link>
         </Col>

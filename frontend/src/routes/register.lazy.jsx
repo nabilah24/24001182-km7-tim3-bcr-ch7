@@ -1,4 +1,4 @@
-import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
+import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
@@ -9,45 +9,40 @@ import Container from "react-bootstrap/Container";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { setToken } from "../redux/slices/auth";
-import { login } from "../services/auth";
+import { register } from "../services/auth";
 import { useMutation } from "@tanstack/react-query";
 
-export const Route = createLazyFileRoute("/login")({
-  component: Login,
+export const Route = createLazyFileRoute("/register")({
+  component: Register,
 });
 
-function Login() {
+function Register() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { token, user } = useSelector((state) => state.auth);
+  const { token } = useSelector((state) => state.auth);
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [profilePicture, setProfilePicture] = useState(undefined);
 
-  if (token && user) {
-    if (user?.roleId === 1) {
-      navigate({ to: "/admin" }); // Redirect to admin page
-    } else if (user?.roleId === 2) {
-      navigate({ to: "/" }); // Redirect to user home page
-    }
+  if (token) {
+    navigate({ to: "/admin" });
   }
 
   // Mutation is used for POST, PUT, PATCH and DELETE
-  const { mutate: loginUser } = useMutation({
+  const { mutate: registerUser } = useMutation({
     mutationFn: (body) => {
-      return login(body);
+      return register(body);
     },
     onSuccess: (data) => {
       // set token to global state
       dispatch(setToken(data?.token));
 
-      // Check roleId and redirect accordingly
-      if (data?.user?.roleId === 1) {
-        navigate({ to: "/admin" }); // Redirect to admin page
-      } else if (data?.user?.roleId === 2) {
-        navigate({ to: "/" }); // Redirect to user home page
-      }
+      // redirect to home
+      navigate({ to: "/" });
     },
     onError: (err) => {
       toast.error(err?.message);
@@ -57,15 +52,22 @@ function Login() {
   const onSubmit = async (event) => {
     event.preventDefault();
 
-    /* hit the login API */
+    // Ensure password and confirm password are the same
+    if (password != confirmPassword) {
+      toast.error("Password and password confirmation must be same!");
+    }
+
+    /* hit the register API */
     // define the request body
-    const body = {
+    const request = {
+      name,
       email,
       password,
+      profilePicture,
     };
 
-    // hit the login API with the data
-    loginUser(body);
+    // hit the register API with the data
+    registerUser(request);
   };
 
   return (
@@ -86,7 +88,7 @@ function Login() {
         {/* Right side with form */}
         <Col
           md={6}
-          className="d-flex align-items-center justify-content-center"
+          className="d-flex align-items-center justify-content-center py-3"
         >
           <div
             style={{
@@ -100,6 +102,27 @@ function Login() {
             </div>
             <h4 className="fw-bold">Welcome</h4>
             <Form onSubmit={onSubmit}>
+              <Form.Group
+                as={Row}
+                className="mb-3 d-flex flex-column"
+                controlId="name"
+              >
+                <Form.Label column sm={3}>
+                  Name
+                </Form.Label>
+                <Col>
+                  <Form.Control
+                    type="text"
+                    placeholder="Complete Name"
+                    required
+                    value={name}
+                    onChange={(event) => {
+                      setName(event.target.value);
+                    }}
+                  />
+                </Col>
+              </Form.Group>
+
               <Form.Group
                 as={Row}
                 className="mb-3 d-flex flex-column"
@@ -120,6 +143,7 @@ function Login() {
                   />
                 </Col>
               </Form.Group>
+
               <Form.Group
                 as={Row}
                 className="mb-3 d-flex flex-column"
@@ -140,14 +164,52 @@ function Login() {
                   />
                 </Col>
               </Form.Group>
+
+              <Form.Group
+                as={Row}
+                className="mb-3 d-flex flex-column"
+                controlId="confirmPassword"
+              >
+                <Form.Label column>Confirm Password</Form.Label>
+                <Col>
+                  <Form.Control
+                    type="password"
+                    placeholder="Confirm Password"
+                    required
+                    value={confirmPassword}
+                    onChange={(event) => {
+                      setConfirmPassword(event.target.value);
+                    }}
+                  />
+                </Col>
+              </Form.Group>
+
+              <Form.Group
+                as={Row}
+                className="mb-3 d-flex flex-column"
+                controlId="profilePicture"
+              >
+                <Form.Label column>Profile Picture</Form.Label>
+                <Col>
+                  <Form.Control
+                    type="file"
+                    placeholder="Choose Image (jpeg, jpg, png)"
+                    required
+                    onChange={(event) => {
+                      setProfilePicture(event.target.files[0]);
+                    }}
+                    accept=".jpeg, .jpg, .png"
+                  />
+                </Col>
+              </Form.Group>
               <div className="d-grid gap-2">
                 <Button type="submit" variant="primary" className="rounded-1">
-                  Sign In
+                  Sign Up
                 </Button>
               </div>
             </Form>
             <div className="text-body-secondary fs-6 mt-3 text-center">
-              Don't have an account? <Link href="/register">Sign Up</Link>
+              Already have an account? <Link href="/login">Sign In</Link>
             </div>
           </div>
         </Col>

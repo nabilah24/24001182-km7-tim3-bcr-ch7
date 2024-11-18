@@ -1,10 +1,10 @@
 import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
-import { getManufactures } from '../../services/manufactures'
-import { getTransmissions } from '../../services/transmissions'
-import { createModel } from '../../services/models'
+import { getManufactures } from '../../../services/manufactures'
+import { getTransmissions } from '../../../services/transmissions'
+import { createModel } from '../../../services/models'
 import { toast } from 'react-toastify'
-import Protected from '../../components/Auth/Protected'
+import Protected from '../../../components/Auth/Protected'
 import {
   Row,
   Col,
@@ -14,43 +14,46 @@ import {
   Breadcrumb,
   Container,
 } from 'react-bootstrap'
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute('/admin/models/create')({
   component: () => (
     <Protected roles={[1]}>
-      <CreateCar />
+      <CreateModels />
     </Protected>
   ),
 })
 
-function CreateCar() {
+function CreateModels() {
   const navigate = useNavigate()
 
   const [name, setName] = useState('')
-  const [manufactures, setManufactures] = useState([])
   const [manufactureId, setManufactureId] = useState(0)
-  const [transmissions, setTransmissions] = useState([])
   const [transmissionId, setTransmissionId] = useState(0)
   const [year, setYear] = useState(null)
   const [rentPerDay, setRentPerDay] = useState(null)
 
-  useEffect(() => {
-    const getManufacturesData = async () => {
-      const result = await getManufactures()
-      if (result?.success) {
-        setManufactures(result?.data)
-      }
-    }
-    const getTransmissionsData = async () => {
-      const result = await getTransmissions()
-      if (result?.success) {
-        setTransmissions(result?.data)
-      }
-    }
+  const { data: manufactures } = useQuery({
+    queryKey: ['manufactures'],
+    queryFn: getManufactures,
+    enabled: true,
+  })
 
-    getManufacturesData()
-    getTransmissionsData()
-  }, [])
+  const { data: transmissions } = useQuery({
+    queryKey: ['transmissions'],
+    queryFn: getTransmissions,
+    enabled: true,
+  })
+
+  const { mutate: createModelData } = useMutation({
+    mutationFn: (request) => createModel(request),
+    onSuccess: () => {
+      navigate({ to: '/admin/models' })
+    },
+    onError: (error) => {
+      toast.error(error?.message)
+    },
+  })
 
   const onSubmit = async (event) => {
     event.preventDefault()
@@ -62,13 +65,7 @@ function CreateCar() {
       year,
       rentPerDay,
     }
-    const result = await createModel(request)
-    if (result?.success) {
-      navigate({ to: '/models' })
-      return
-    }
-
-    toast.error(result?.message)
+    createModelData(request);
   }
 
   return (
@@ -124,7 +121,7 @@ function CreateCar() {
                       <option disabled value="selected">
                         Select Manufacture
                       </option>
-                      {manufactures.length > 0 &&
+                      {manufactures && manufactures?.length > 0 &&
                         manufactures.map((manufacture) => (
                           <option key={manufacture?.id} value={manufacture?.id}>
                             {manufacture?.name}
@@ -151,7 +148,7 @@ function CreateCar() {
                       <option disabled value="selected">
                         Select Transmission
                       </option>
-                      {transmissions.length > 0 &&
+                      {transmissions && transmissions?.length > 0 &&
                         transmissions.map((transmission) => (
                           <option
                             key={transmission?.id}

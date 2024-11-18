@@ -1,10 +1,18 @@
 import { useState, useEffect } from "react";
 import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Row, Col, Button, Container, Breadcrumb } from "react-bootstrap";
+import {
+  Row,
+  Col,
+  Button,
+  Container,
+  Breadcrumb,
+  Spinner,
+} from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getCars } from "../../../services/cars";
+import { useQuery } from "@tanstack/react-query";
 import CarItem from "../../../components/Admin/CarItem";
 import Protected from "../../../components/Auth/Protected";
 
@@ -20,34 +28,27 @@ function CarsIndex() {
   const { user, token } = useSelector((state) => state.auth);
 
   const [cars, setCars] = useState([]);
-  const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
+  const { data, isSuccess, isPending } = useQuery({
+    queryKey: ["cars"],
+    queryFn: () => getCars(),
+    enabled: !!token,
+  });
 
   useEffect(() => {
-    const getCarsData = async () => {
-      setLoading(true);
-
-      const result = await getCars();
-      console.log(result);
-      if (result.success) {
-        setCars(result.data);
-      }
-      setLoading(false);
-    };
-
-    // Check if there any token
-    if (token) {
-      getCarsData();
-    } else {
-      navigate({ to: "/login" });
+    if (isSuccess) {
+      setCars(data);
     }
-  }, [navigate, token]);
+  }, [data, isSuccess]);
 
-  if (loading) {
+  if (isPending) {
     return (
-      <Row className="mt-4">
-        <h1>Loading...</h1>
+      <Row className="mt-5">
+        <Col className="text-center">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden"></span>
+          </Spinner>
+        </Col>
       </Row>
     );
   }

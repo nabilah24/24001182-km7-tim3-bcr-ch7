@@ -1,6 +1,12 @@
 import * as React from "react";
 import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import Card from "react-bootstrap/Card";
+import HeroSection from "../components/Home/HeroSection";
+import ServiceSection from "../components/Home/ServiceSection";
+import WhyUsSection from "../components/Home/WhyUsSection";
+import TestimonialSection from "../components/Home/TestimonialSection";
+import CtaSection from "../components/Home/ctaSection";
+import FaqSection from "../components/Home/faqSection";
+import FooterSection from "../components/ui/Footer";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
@@ -9,17 +15,14 @@ export const Route = createLazyFileRoute("/")({
 // Landing Page
 function Index() {
   return (
-    <Card style={{ width: "18rem" }}>
-      <Card.Body>
-        <Card.Title>Card Title</Card.Title>
-        <Card.Subtitle className="mb-2 text-muted">Card Subtitle</Card.Subtitle>
-        <Card.Text>
-          Some quick example text to build on the card title and make up the
-          bulk of the card's content.
-        </Card.Text>
-        <Card.Link href="#">Card Link</Card.Link>
-        <Card.Link href="#">Another Link</Card.Link>
-      </Card.Body>
-    </Card>
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+      <HeroSection asChild />
+      <ServiceSection asChild />
+      <WhyUsSection asChild />
+      <TestimonialSection asChild />
+      <CtaSection asChild />
+      <FaqSection asChild />
+      <FooterSection asChild />
+    </div>
   );
 }

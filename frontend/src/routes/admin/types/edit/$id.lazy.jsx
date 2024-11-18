@@ -7,9 +7,10 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Breadcrumb from "react-bootstrap/Breadcrumb";
-import { getDetailTypeCar, updateTypeCar } from "../../../services/types";
+import { getDetailTypeCar, updateTypeCar } from "../../../../services/types";
 import { toast } from "react-toastify";
-import Protected from "../../../components/Auth/Protected";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import Protected from "../../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/types/edit/$id")({
   component: () => (
@@ -26,33 +27,38 @@ function EditTypeCar() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [capacity, setCapacity] = useState("");
-  const [isNotFound, setIsNotFound] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+
+  // Use react query to fetch API
+  const { data, isSuccess, isError } = useQuery({
+    queryKey: ["types", id],
+    queryFn: () => getDetailTypeCar(id),
+    enabled: !!id,
+  });
 
   useEffect(() => {
-    const getDetailTypeCarData = async (id) => {
-      setIsLoading(true);
-      const result = await getDetailTypeCar(id);
-      if (result?.success) {
-        setName(result.data?.name);
-        setDescription(result.data?.description);
-        setCapacity(result.data?.capacity);
-        setIsNotFound(false);
-      } else {
-        setIsNotFound(true);
-      }
-      setIsLoading(false);
-    };
-
-    if (id) {
-      getDetailTypeCarData(id);
-    }
-  }, [id]);
-
-  if (isNotFound) {
+    if (isSuccess && data) {
+       setName(data.name)
+       setDescription(data.description)
+       setCapacity(data.capacity)
+     }
+ }, [isSuccess, data])
+  
+  if (isError) {
     navigate({ to: "/types" });
     return;
   }
+
+  // Adjust mutation function to include id correctly
+  const { mutate: updateTypeData } = useMutation({
+    mutationFn: (type) => updateTypeCar(id, type), // Pass id from useParams
+    onSuccess: () => {
+        toast.success("Type updated successfully!");
+        navigate({ to: `/admin/types` });
+    },
+    onError: (err) => {
+        toast.error(err?.message);
+    },
+  });
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -63,16 +69,9 @@ function EditTypeCar() {
       description,
       capacity: parseInt(capacity, 10), // Convert to number
     };
-    const result = await updateTypeCar(id, request);
-    if (result?.success) {
-      navigate({ to: `/types` });
-      toast.success("Car type edited successfully!");
-      return;
-    }
 
-    toast.error(result?.message);
-  };
-
+    updateTypeData(request);
+  }
   return (
     <Container className="my-4">
       <Breadcrumb>

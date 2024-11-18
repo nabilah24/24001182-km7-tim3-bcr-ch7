@@ -1,11 +1,7 @@
 import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowLeft,
-  faClipboardCheck,
-  faKey,
-} from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faKey } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import {
@@ -18,39 +14,39 @@ import {
   Spinner,
 } from "react-bootstrap";
 import { getCarDetail } from "../../services/cars";
+import { useQuery } from "@tanstack/react-query";
+import Protected from "../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/cars/$id")({
-  component: CarsDetail,
+  component: () => (
+    <Protected roles={[2]}>
+      <CarsDetail />
+    </Protected>
+  ),
 });
 
 function CarsDetail() {
   const { id } = Route.useParams();
+  const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.auth);
 
   const [car, setCar] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [isNotFound, setIsNotFound] = useState(false);
+
+  // use tanstack react query to fetch car data
+  const { data, isSuccess, isPending, isError } = useQuery({
+    queryKey: ["cars", id],
+    queryFn: () => getCarDetail(id),
+    enabled: !!id,
+  });
 
   useEffect(() => {
-    const getCarDetailData = async (id) => {
-      setLoading(true);
-      const result = await getCarDetail(id);
-      if (result?.success) {
-        setCar(result.data);
-        setIsNotFound(false);
-      } else {
-        setIsNotFound(true);
-      }
-      setLoading(false);
-    };
-
-    if (id) {
-      getCarDetailData(id);
+    if (isSuccess) {
+      setCar(data);
     }
-  }, [id]);
+  }, [data, isSuccess]);
 
-  if (isNotFound) {
+  if (isError) {
     return (
       <Row className="mt-5">
         <Col>
@@ -70,23 +66,27 @@ function CarsDetail() {
     });
   };
 
-  const handleRent = async () => {
-    Swal.fire({
-      title: "Confirm to rent car",
-      text: "Are you sure you want to rent this car?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes",
-      confirmButtonColor: "#0d6efd",
-      cancelButtonText: "No",
-      reverseButtons: true,
-    });
+  const handleRent = () => {
+    if (user?.roleId === 2) {
+      Swal.fire({
+        title: "Confirm to rent car",
+        text: "Are you sure you want to rent this car?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Yes",
+        confirmButtonColor: "#0d6efd",
+        cancelButtonText: "No",
+        reverseButtons: true,
+      });
+    } else {
+      navigate({ to: "/login" });
+    }
   };
 
   return (
     <Container style={{ marginTop: "15vh", marginBottom: "5vh" }}>
       <Row className="mt-4 w-100 align-items-center justify-content-center">
-        {loading ? (
+        {isPending ? (
           <Col
             style={{ height: "30vh" }}
             className="d-flex justify-content-center align-items-center w-100"
@@ -157,37 +157,33 @@ function CarsDetail() {
               </Card.Body>
 
               <Container className="d-flex justify-content-center gap-2 mb-3">
-                {user?.roleId === 2 && (
-                  <>
-                    <Button
-                      as={Link}
-                      size="md"
-                      variant="primary"
-                      className="py-2 px-5 rounded-0 fw-semibold"
-                      to="/cars"
-                    >
-                      <FontAwesomeIcon
-                        icon={faArrowLeft}
-                        style={{ color: "#fff" }}
-                        className="me-2"
-                      />
-                      Go Back
-                    </Button>
-                    <Button
-                      size="md"
-                      variant="danger"
-                      className="py-2 px-5 rounded-0 fw-semibold"
-                      onClick={handleRent}
-                    >
-                      <FontAwesomeIcon
-                        icon={faKey}
-                        style={{ color: "#fff" }}
-                        className="me-2"
-                      />
-                      Rent Car
-                    </Button>
-                  </>
-                )}
+                <Button
+                  as={Link}
+                  size="md"
+                  variant="primary"
+                  className="py-2 px-5 rounded-0 fw-semibold"
+                  to="/cars"
+                >
+                  <FontAwesomeIcon
+                    icon={faArrowLeft}
+                    style={{ color: "#fff" }}
+                    className="me-2"
+                  />
+                  Go Back
+                </Button>
+                <Button
+                  size="md"
+                  variant="danger"
+                  className="py-2 px-5 rounded-0 fw-semibold"
+                  onClick={handleRent}
+                >
+                  <FontAwesomeIcon
+                    icon={faKey}
+                    style={{ color: "#fff" }}
+                    className="me-2"
+                  />
+                  Rent Car
+                </Button>
               </Container>
             </Card>
           </Col>

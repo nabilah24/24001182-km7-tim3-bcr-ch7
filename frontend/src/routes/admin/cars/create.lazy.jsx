@@ -18,6 +18,7 @@ import {
   ListGroup,
 } from "react-bootstrap";
 import NoImage from "../../../../img/no-image.jpg";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/admin/cars/create")({
   component: () => (
@@ -31,9 +32,7 @@ function CreateCar() {
   const navigate = useNavigate();
 
   const [plate, setPlate] = useState("");
-  const [models, setModels] = useState([]);
   const [modelId, setModelId] = useState(0);
-  const [types, setTypes] = useState([]);
   const [typeId, setTypeId] = useState(0);
   const [availableAt, setAvailableAt] = useState("");
   const [available, setAvailable] = useState(false);
@@ -46,24 +45,25 @@ function CreateCar() {
   const [specs, setSpecs] = useState([]);
   const [inputSpecs, setInputSpecs] = useState("");
 
-  useEffect(() => {
-    const getModelsData = async () => {
-      const result = await getModels();
-      if (result?.success) {
-        setModels(result?.data);
-      }
-    };
-    const getTypesData = async () => {
-      const result = await getTypeCars();
-      if (result?.success) {
-        setTypes(result?.data);
-      }
-    };
+  const { data: models } = useQuery({
+    queryKey: ['models'],
+    queryFn: () => getModels(),
+  })
 
-    getModelsData();
-    getTypesData();
-  }, []);
+  const { data: types } = useQuery({
+    queryKey: ['types'],
+    queryFn: () => getTypeCars(),
+  })
 
+  const { mutate: createCarData } = useMutation({
+    mutationFn: (request) => createCar(request),
+    onSuccess: () => {
+      navigate({ to: '/admin/cars' })
+    },
+    onError: (error) => {
+      toast.error(error?.message)
+    },
+  })
   // ------ handle description input --------
   const [description, setDescription] = useState("");
   const textMaxLength = 250;
@@ -130,13 +130,7 @@ function CreateCar() {
       options,
       specs,
     };
-    const result = await createCar(request);
-    if (result?.success) {
-      navigate({ to: "/cars" });
-      return;
-    }
-
-    toast.error(result?.message);
+    createCarData(request)
   };
 
   return (
@@ -194,7 +188,7 @@ function CreateCar() {
                           <option disabled value="selected">
                             Select Model
                           </option>
-                          {models.length > 0 &&
+                          {models && models?.length > 0 &&
                             models.map((model) => (
                               <option key={model?.id} value={model?.id}>
                                 {model?.name}
@@ -219,7 +213,7 @@ function CreateCar() {
                           <option disabled value="selected">
                             Select Type
                           </option>
-                          {types.length > 0 &&
+                          {types && types?.length > 0 &&
                             types.map((type) => (
                               <option key={type?.id} value={type?.id}>
                                 {type?.name}

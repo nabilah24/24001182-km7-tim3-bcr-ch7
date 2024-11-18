@@ -15,7 +15,7 @@ const TableCRUD = ({ model }) => {
       <td className="d-flex justify-content-center">
         <Button
           as={Link}
-          to={`/models/${model?.id}`}
+          to={`/admin/models/${model?.id}`}
           className="py-2 px-3 bg-primary rounded-0 mb-2 fw-semibold text-white border-primary"
           size="md"
         >

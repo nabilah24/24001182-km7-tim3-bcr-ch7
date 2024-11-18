@@ -5,8 +5,14 @@ import Row from "react-bootstrap/Row";
 import Card from "react-bootstrap/Card";
 import { useEffect } from "react";
 import { Breadcrumb, Container } from "react-bootstrap";
+import Protected from "../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/profile")({
+  component: () => (
+    <Protected roles={[1]}>
+      <Profile />
+    </Protected>
+  ),
   component: () => (
     <Protected roles={[1]}>
       <AdminProfile />

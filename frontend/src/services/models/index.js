@@ -1,6 +1,6 @@
 export const getModels = async (name, year, rentPerDay) => {
   const token = localStorage.getItem("token");
-  let params;
+  let params = {};
   if (name) {
     params.name = name;
   }
@@ -10,9 +10,10 @@ export const getModels = async (name, year, rentPerDay) => {
   if (rentPerDay) {
     params.rentPerDay = rentPerDay;
   }
-
+    // Cek apakah params memiliki nilai, jika ada, buat query string
+  
   let url =
-    `${import.meta.env.VITE_API_URL}/models` + new URLSearchParams(params);
+    `${import.meta.env.VITE_API_URL}/models` + new URLSearchParams(params);;
 
   const response = await fetch(url, {
     headers: {
@@ -23,7 +24,11 @@ export const getModels = async (name, year, rentPerDay) => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const getModelDetail = async (id) => {
@@ -40,7 +45,11 @@ export const getModelDetail = async (id) => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const createModel = async (request) => {
@@ -61,9 +70,13 @@ export const createModel = async (request) => {
     body: formData,
   });
 
-  // get the data if fetching succeed!
+  // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const updateModel = async (id, request) => {
@@ -84,9 +97,13 @@ export const updateModel = async (id, request) => {
     body: formData,
   });
 
-  // get the data if fetching succeed!
+  // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const deleteModel = async (id) => {
@@ -103,5 +120,9 @@ export const deleteModel = async (id) => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };

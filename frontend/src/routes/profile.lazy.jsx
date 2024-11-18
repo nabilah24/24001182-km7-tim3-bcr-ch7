@@ -23,7 +23,7 @@ function UserProfile() {
 
   useEffect(() => {
     if (!token) {
-      navigate({ to: "/" });
+      navigate({ to: "/login" });
     }
   }, [navigate, token]);
 

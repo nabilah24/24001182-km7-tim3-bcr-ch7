@@ -1,10 +1,10 @@
 import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { getModels } from "../../../services/models";
-import { getTypeCars } from "../../../services/types";
-import { getCarDetail, updateCar } from "../../../services/cars";
+import { getModels } from "../../../../services/models";
+import { getTypeCars } from "../../../../services/types";
+import { getCarDetail, updateCar } from "../../../../services/cars";
 import { toast } from "react-toastify";
-import Protected from "../../../components/Auth/Protected";
+import Protected from "../../../../components/Auth/Protected";
 import {
   Breadcrumb,
   Container,
@@ -17,6 +17,7 @@ import {
   Button,
   Image,
 } from "react-bootstrap";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/admin/cars/edit/$id")({
   component: () => (
@@ -31,9 +32,7 @@ function EditCar() {
   const navigate = useNavigate();
 
   const [plate, setPlate] = useState("");
-  const [models, setModels] = useState([]);
   const [modelId, setModelId] = useState(0);
-  const [types, setTypes] = useState([]);
   const [typeId, setTypeId] = useState(0);
   const [availableAt, setAvailableAt] = useState("");
   const [available, setAvailable] = useState(false);
@@ -43,55 +42,51 @@ function EditCar() {
   const [inputOptions, setInputOptions] = useState("");
   const [specs, setSpecs] = useState([]);
   const [inputSpecs, setInputSpecs] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [isNotFound, setIsNotFound] = useState(false);
+
+  const { data: models } = useQuery({
+    queryKey: ['models'],
+    queryFn: () => getModels(),
+  })
+
+  const { data: types } = useQuery({
+    queryKey: ['types'],
+    queryFn: () => getTypeCars(),
+  })
+
+  // Use react query to fetch API
+  const { data, isSuccess, isError } = useQuery({
+    queryKey: ["cars", id],
+    queryFn: () => getCarDetail(id),
+    enabled: !!id,
+  });
+
+  // Adjust mutation function to include id correctly
+  const { mutate: updateModelData, isPending: isUpdateProcessing } = useMutation({
+    mutationFn: (car) => updateCar(id, car), // Pass id from useParams
+    onSuccess: () => {
+        toast.success("Car updated successfully!");
+        navigate({ to: `/admin/cars` });
+    },
+    onError: (err) => {
+        toast.error(err?.message);
+    },
+  });
 
   useEffect(() => {
-    const getModelsData = async () => {
-      const result = await getModels();
-      if (result?.success) {
-        setModels(result?.data);
+      if (isSuccess && data) {
+        setPlate(data.plate);
+        setModelId(data.modelId);
+        setTypeId(data.typeId);
+        setDescription(data.description);
+        setAvailableAt(data.availableAt);
+        setAvailable(data.available);
+        setCurrentImage(data.image);
+        setOptions(data.options);
+        setSpecs(data.specs);
       }
-    };
-    const getTypesData = async () => {
-      const result = await getTypeCars();
-      if (result?.success) {
-        setTypes(result?.data);
-      }
-    };
+  }, [isSuccess, data]);
 
-    getModelsData();
-    getTypesData();
-  }, []);
-
-  useEffect(() => {
-    const getCarDetailData = async (id) => {
-      setLoading(true);
-
-      const result = await getCarDetail(id);
-      if (result?.success) {
-        setPlate(result.data.plate);
-        setModelId(result.data.modelId);
-        setTypeId(result.data.typeId);
-        setDescription(result.data.description);
-        setAvailableAt(result.data.availableAt);
-        setAvailable(result.data.available);
-        setCurrentImage(result.data.image);
-        setOptions(result.data.options);
-        setSpecs(result.data.specs);
-        setLoading(false);
-      } else {
-        setIsNotFound(false);
-      }
-      setLoading(false);
-    };
-
-    if (id) {
-      getCarDetailData(id);
-    }
-  }, [id]);
-
-  if (isNotFound) {
+  if (isError) {
     navigate({ to: "/admin/cars" });
     return;
   }
@@ -162,13 +157,7 @@ function EditCar() {
       options,
       specs,
     };
-    const result = await updateCar(id, request);
-    if (result?.success) {
-      navigate({ to: `/admin/cars/${id}` });
-      return;
-    }
-
-    toast.error(result?.message);
+    updateModelData(request)
   };
 
   return (
@@ -181,7 +170,7 @@ function EditCar() {
           <Link to="/admin/cars">Cars</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item>
-          <Link to={`/cars/${id}`}>Detail</Link>
+          <Link to={`/admin/cars/${id}`}>Detail</Link>
         </Breadcrumb.Item>
         <Breadcrumb.Item active>Edit</Breadcrumb.Item>
       </Breadcrumb>
@@ -229,7 +218,7 @@ function EditCar() {
                           <option disabled value="selected">
                             Select Model
                           </option>
-                          {!loading &&
+                          {!isUpdateProcessing && models &&
                             models.length > 0 &&
                             models.map((model) => (
                               <option
@@ -259,7 +248,7 @@ function EditCar() {
                           <option disabled value="selected">
                             Select Type
                           </option>
-                          {!loading &&
+                          {!isUpdateProcessing && types &&
                             types.length > 0 &&
                             types.map((type) => (
                               <option

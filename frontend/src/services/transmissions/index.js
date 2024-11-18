@@ -11,7 +11,11 @@ export const getTransmissions = async () => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const getDetailTransmission = async (id) => {
@@ -28,7 +32,11 @@ export const getDetailTransmission = async (id) => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const createTransmission = async (request) => {
@@ -47,9 +55,13 @@ export const createTransmission = async (request) => {
       body: formData,
   });
 
-  // get the data if fetching succeed!
+  // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const updateTransmission = async (id, request) => {
@@ -68,9 +80,13 @@ export const updateTransmission = async (id, request) => {
       body: formData,
   });
 
-  // get the data if fetching succeed!
+  // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };
 
 export const deleteTransmission = async (id) => {
@@ -87,5 +103,9 @@ export const deleteTransmission = async (id) => {
 
   // get data
   const result = await response.json();
-  return result;
+  if (!result?.success) {
+      throw new Error(result?.message);
+  }
+
+  return result?.data;
 };

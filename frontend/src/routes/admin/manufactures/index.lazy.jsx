@@ -13,8 +13,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { getManufactures } from "../../../services/manufactures";
-import ManufactureItem from "../../../components/Admin/ManufactureItem";
+import ManufactureItem from "../../../components/ManufactureItem";
 import { confirmAlert } from "react-confirm-alert";
+import { useQuery } from "@tanstack/react-query";
 import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/manufactures/")({
@@ -29,22 +30,18 @@ function IndexManufacture() {
   const { user, token } = useSelector((state) => state.auth);
 
   const [manufactures, setManufactures] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+
+  const { data, isSuccess, isPending } = useQuery({
+    queryKey: ["manufactures"],
+    queryFn: () => getManufactures(),
+    enabled: !!token,
+  });
 
   useEffect(() => {
-    const getManufactureData = async () => {
-      setIsLoading(true);
-      const result = await getManufactures();
-      if (result.success) {
-        setManufactures(result.data);
-      }
-      setIsLoading(false);
-    };
-
-    if (token) {
-      getManufactureData();
+    if (isSuccess) {
+      setManufactures(data);
     }
-  }, [token]);
+  }, [data, isSuccess]);
 
   if (!token) {
     return (
@@ -58,7 +55,7 @@ function IndexManufacture() {
     );
   }
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <Row className="mt-5">
         <Col className="text-center">
@@ -83,7 +80,7 @@ function IndexManufacture() {
         {user?.roleId === 1 && (
           <Button
             as={Link}
-            href={`/manufactures/create`}
+            href={`/admin/manufactures/create`}
             variant="primary"
             className="rounded-0"
           >

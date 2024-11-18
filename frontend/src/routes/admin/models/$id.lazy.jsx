@@ -2,11 +2,20 @@ import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import { deleteModel, getModelDetail } from "../../services/models";
+import { deleteModel, getModelDetail } from "../../../services/models";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
-import { Row, Col, Card, Button, Breadcrumb, Container } from "react-bootstrap";
+import {
+  Row,
+  Col,
+  Card,
+  Button,
+  Breadcrumb,
+  Container,
+  Spinner,
+} from "react-bootstrap";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/models/$id")({
@@ -24,28 +33,31 @@ function ModelsDetail() {
   const { user } = useSelector((state) => state.auth);
 
   const [models, setModels] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [isNotFound, setIsNotFound] = useState(false);
+
+  // Use react query to fetch API
+  const { data, isSuccess, isPending, isError } = useQuery({
+    queryKey: ["models", id],
+    queryFn: () => getModelDetail(id),
+    enabled: !!id,
+  });
+
+  const { mutate: deleting, isPending: isDeleteProcessing } = useMutation({
+    mutationFn: () => deleteModel(id),
+    onSuccess: () => {
+      navigate({ to: "/admin/models" });
+    },
+    onError: (error) => {
+      toast.error(error?.message);
+    },
+  });
 
   useEffect(() => {
-    const getModelDetailData = async (id) => {
-      setLoading(true);
-      const result = await getModelDetail(id);
-      if (result?.success) {
-        setModels(result.data);
-        setIsNotFound(false);
-      } else {
-        setIsNotFound(true);
-      }
-      setLoading(false);
-    };
-
-    if (id) {
-      getModelDetailData(id);
+    if (isSuccess) {
+      setModels(data);
     }
-  }, [id]);
+  }, [data, isSuccess]);
 
-  if (loading) {
+  if (isPending) {
     return (
       <Row className="mt-5">
         <Col>
@@ -55,11 +67,13 @@ function ModelsDetail() {
     );
   }
 
-  if (isNotFound) {
+  if (isError) {
     return (
       <Row className="mt-5">
-        <Col>
-          <h1 className="text-center">Model is not found!</h1>
+        <Col className="text-center">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden"></span>
+          </Spinner>
         </Col>
       </Row>
     );
@@ -79,7 +93,7 @@ function ModelsDetail() {
       reverseButtons: true,
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const deleteResult = await deleteModel(id);
+        const deleteResult = deleting(id);
         if (deleteResult?.success) {
           navigate({ to: "/admin/models" });
         } else {
@@ -145,6 +159,7 @@ function ModelsDetail() {
                   className="py-2 px-3 bg-white rounded-0 fw-semibold"
                   style={{ border: "1px solid #fa2c5a", color: "#fa2c5a" }}
                   onClick={handleDelete}
+                  disabled={isDeleteProcessing}
                 >
                   <FontAwesomeIcon
                     icon={faTrashCan}
@@ -156,7 +171,7 @@ function ModelsDetail() {
 
                 <Button
                   as={Link}
-                  to={`/models/edit/${id}`}
+                  to={`/admin/models/edit/${id}`}
                   className="py-2 px-3 bg-success rounded-0 fw-semibold text-white border-success"
                   size="md"
                 >
