@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { getTransmissions } from "../../../services/transmissions";
-import TransmissionItem from "../../../components/TransmissionItem";
+import TransmissionItem from "../../../components/Admin/TransmissionItem";
 import { useQuery } from "@tanstack/react-query";
 import { confirmAlert } from "react-confirm-alert";
 import Protected from "../../../components/Auth/Protected";
