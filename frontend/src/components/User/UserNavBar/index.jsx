@@ -1,8 +1,8 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setToken, setUser } from "../../redux/slices/auth";
-import { profile } from "../../services/auth";
+import { setToken, setUser } from "../../../redux/slices/auth";
+import { profile } from "../../../services/auth";
 import Swal from "sweetalert2";
 import {
   Container,
@@ -12,9 +12,11 @@ import {
   NavItem,
   NavLink,
   Image,
+  Offcanvas,
+  Button,
 } from "react-bootstrap";
 
-const AdminNavBar = () => {
+function UserNavbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -68,30 +70,32 @@ const AdminNavBar = () => {
       }
     });
   };
-
   return (
-    <>
-      <Navbar
-        collapseOnSelect
-        expand="lg"
-        className="bg-body-primary shadow-sm"
-      >
-        <Container>
-          <div className="text-body-secondary fs-4 fw-bold ">
-            BINAR CAR RENTAL
-          </div>
-          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-          <Navbar.Collapse id="responsive-navbar-nav">
-            <Nav className="me-auto">
-              {/* 
-                {user && user?.role_id === 1 && (
-                  <Nav.Link as={Link} to="/students/create">
-                      Create Student
-                  </Nav.Link>
-                )} 
-              */}
+    <Navbar expand="lg" fixed="top" bg="white" className="py-3">
+      <Container>
+        <Navbar.Brand as={Link} to="/">
+          <Navbar.Text className="fs-4 text-primary fw-bold">
+            BINAR RENTAL
+          </Navbar.Text>
+        </Navbar.Brand>
+        <Navbar.Toggle aria-controls="offcanvasNavbar" />
+        <Navbar.Offcanvas
+          id="offcanvasNavbar"
+          aria-labelledby="offcanvasNavbarLabel"
+          placement="end"
+          className="custom-offcanvas"
+        >
+          <Offcanvas.Header closeButton className="mt-2">
+            <Offcanvas.Title id="offcanvasNavbarLabel">BCR</Offcanvas.Title>
+          </Offcanvas.Header>
+          <Offcanvas.Body>
+            <Nav className="ms-auto">
+              <Nav.Link href="#service">Our Services</Nav.Link>
+              <Nav.Link href="#why-us">Why Us</Nav.Link>
+              <Nav.Link href="#testimonial">Testimonial</Nav.Link>
+              <Nav.Link href="#faq">FAQ</Nav.Link>
             </Nav>
-            <Nav>
+            <Nav className="ms-3">
               {user ? (
                 <>
                   <Nav.Link as={Link} to="/profile">
@@ -111,7 +115,7 @@ const AdminNavBar = () => {
                     <Dropdown.Toggle as={NavLink}>{user?.name}</Dropdown.Toggle>
                     <Dropdown.Menu>
                       <Dropdown.Item>
-                        <Nav.Link as={Link} to="/admin/profile">
+                        <Nav.Link as={Link} to="/profile">
                           Profile
                         </Nav.Link>
                       </Dropdown.Item>
@@ -122,14 +126,21 @@ const AdminNavBar = () => {
                   </Dropdown>
                 </>
               ) : (
-                <></>
+                <Button
+                  as={Link}
+                  to="/login"
+                  variant="primary"
+                  className="px-3"
+                >
+                  Login
+                </Button>
               )}
             </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-    </>
+          </Offcanvas.Body>
+        </Navbar.Offcanvas>
+      </Container>
+    </Navbar>
   );
-};
+}
 
-export default AdminNavBar;
+export default UserNavbar;

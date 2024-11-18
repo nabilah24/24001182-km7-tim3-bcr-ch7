@@ -3,12 +3,17 @@ import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Breadcrumb, Button, Container, Row, Table } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { getModels } from "../../../services/models";
-import ModelTable from "../../../components/ModelTable";
+import ModelTable from "../../../components/Admin/ModelTable";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/models/")({
-  component: ModelsIndex,
+  component: () => (
+    <Protected roles={[1]}>
+      <ModelsIndex />
+    </Protected>
+  ),
 });
 
 function ModelsIndex() {

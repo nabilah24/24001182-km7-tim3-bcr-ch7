@@ -1,4 +1,5 @@
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
+import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
@@ -24,13 +25,20 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  useEffect(() => {
-    // get token from local storage
-    if (token) {
-      navigate({ to: "/" });
-    }
-  }, [navigate, token]);
+  if (token) {
+    navigate({ to: "/" });
+  }
 
+  const { mutate: loginUser } = useMutation({
+    mutationFn: (body) => {
+      return login(body);
+    },
+    onSuccess: (data) => {
+      dispatch(setToken(data?.token));
+
+      // redirect to
+    },
+  });
   const onSubmit = async (event) => {
     event.preventDefault();
 
@@ -44,12 +52,22 @@ function Login() {
     // hit the login API with the data
     const result = await login(body);
     if (result.success) {
-      // set token to global state
-      dispatch(setToken(result.data.token));
+      console.log(result);
 
-      // redirect to home
-      navigate({ to: "/" });
-      return;
+      const { user, token } = result.data;
+
+      // set token to global state
+      dispatch(setToken(token));
+
+      if (user?.roleId === 1) {
+        navigate({ to: "/admin" });
+      } else if (user?.roleId === 2) {
+        navigate({ to: "/cars" });
+      } else {
+        toast.error("Invalid role");
+        // redirect to home
+        return;
+      }
     }
 
     toast.error(result?.message);

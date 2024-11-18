@@ -11,11 +11,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { getTransmissions } from "../../../services/transmissions";
-import TransmissionItem from "../../../components/TransmissionItem";
+import TransmissionItem from "../../../components/Admin/TransmissionItem";
 import { confirmAlert } from "react-confirm-alert";
+import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/transmissions/")({
-  component: IndexTransmission,
+  component: () => (
+    <Protected roles={[1]}>
+      <IndexTransmission />
+    </Protected>
+  ),
 });
 
 function IndexTransmission() {

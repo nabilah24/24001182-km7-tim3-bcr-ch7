@@ -79,7 +79,3 @@ export const getUsers = async (name) => {
     return { error: "Failed to fetch users" };
   }
 };
-
-
-
-

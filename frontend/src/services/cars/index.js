@@ -1,18 +1,26 @@
-export const getCars = async (plate, available, availableAt) => {
+export const getCars = async (
+  driveType,
+  transmission,
+  availableAt,
+  capacity
+) => {
   const token = localStorage.getItem("token");
   let params = {};
-  if (plate) {
-    params.plate = plate;
+  if (driveType) {
+    params.driveType = driveType;
   }
-  if (available) {
-    params.available = available;
+  if (transmission) {
+    params.transmission = transmission;
   }
   if (availableAt) {
     params.availableAt = availableAt;
   }
+  if (capacity) {
+    params.capacity = capacity;
+  }
 
   let url =
-    `${import.meta.env.VITE_API_URL}/cars` + new URLSearchParams(params);
+    `${import.meta.env.VITE_API_URL}/cars?` + new URLSearchParams(params);
 
   const response = await fetch(url, {
     headers: {

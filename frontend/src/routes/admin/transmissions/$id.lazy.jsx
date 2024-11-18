@@ -13,9 +13,14 @@ import { toast } from "react-toastify";
 import { confirmAlert } from "react-confirm-alert";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
+import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/transmissions/$id")({
-  component: TransmissionDetail,
+  component: () => (
+    <Protected roles={[1]}>
+      <TransmissionDetail />
+    </Protected>
+  ),
 });
 
 function TransmissionDetail() {

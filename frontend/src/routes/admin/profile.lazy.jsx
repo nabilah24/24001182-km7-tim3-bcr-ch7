@@ -7,10 +7,14 @@ import { useEffect } from "react";
 import { Breadcrumb, Container } from "react-bootstrap";
 
 export const Route = createLazyFileRoute("/admin/profile")({
-  component: Profile,
+  component: () => (
+    <Protected roles={[1]}>
+      <AdminProfile />
+    </Protected>
+  ),
 });
 
-function Profile() {
+function AdminProfile() {
   const navigate = useNavigate();
   const { user, token } = useSelector((state) => state.auth);
 

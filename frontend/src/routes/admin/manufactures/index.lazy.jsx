@@ -1,21 +1,28 @@
-import Container from "react-bootstrap/Container";
-import Breadcrumb from "react-bootstrap/Breadcrumb";
-import Button from "react-bootstrap/Button";
-import Col from "react-bootstrap/Col";
-import Spinner from "react-bootstrap/Spinner";
-import Table from "react-bootstrap/Table";
-import Row from "react-bootstrap/Row";
+import {
+  Container,
+  Breadcrumb,
+  Button,
+  Col,
+  Spinner,
+  Table,
+  Row,
+} from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { getManufactures } from "../../../services/manufactures";
-import ManufactureItem from "../../../components/ManufactureItem";
+import ManufactureItem from "../../../components/Admin/ManufactureItem";
 import { confirmAlert } from "react-confirm-alert";
+import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/manufactures/")({
-  component: IndexManufacture,
+  component: () => (
+    <Protected roles={[1]}>
+      <IndexManufacture />
+    </Protected>
+  ),
 });
 
 function IndexManufacture() {

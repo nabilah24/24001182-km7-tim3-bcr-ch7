@@ -15,9 +15,14 @@ import {
   Card,
   Button,
 } from "react-bootstrap";
+import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/cars/$id")({
-  component: CarsDetail,
+  component: () => (
+    <Protected roles={[1]}>
+      <CarsDetail />
+    </Protected>
+  ),
 });
 
 function CarsDetail() {

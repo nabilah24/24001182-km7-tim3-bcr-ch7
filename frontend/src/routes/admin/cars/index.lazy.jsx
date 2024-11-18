@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getCars } from "../../../services/cars";
-import CarItem from "../../../components/CarItem";
+import CarItem from "../../../components/Admin/CarItem";
 import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/cars/")({

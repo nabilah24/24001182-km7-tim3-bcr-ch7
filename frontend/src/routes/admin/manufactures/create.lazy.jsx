@@ -1,13 +1,15 @@
 import { createLazyFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { createManufacture } from "../../services/manufactures";
 import { useState } from "react";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Form from "react-bootstrap/Form";
-import Container from "react-bootstrap/Container";
-import Button from "react-bootstrap/Button";
-import Breadcrumb from "react-bootstrap/Breadcrumb";
-import Card from "react-bootstrap/Card";
+import {
+  Row,
+  Col,
+  Form,
+  Container,
+  Button,
+  Breadcrumb,
+  Card,
+} from "react-bootstrap";
 import Protected from "../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/manufactures/create")({

@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 
@@ -13,6 +14,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 // Create a new router instance
 const router = createRouter({ routeTree });
 
+// Create tanstack query client
+const queryClient = new QueryClient();
+
 // Render the app
 const rootElement = document.getElementById("root");
 if (!rootElement.innerHTML) {
@@ -20,7 +24,9 @@ if (!rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <Provider store={store}>
-        <RouterProvider router={router} />
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       </Provider>
     </StrictMode>
   );

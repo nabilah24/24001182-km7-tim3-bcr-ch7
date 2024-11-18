@@ -7,9 +7,14 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { Row, Col, Card, Button, Breadcrumb, Container } from "react-bootstrap";
+import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/models/$id")({
-  component: ModelsDetail,
+  component: () => (
+    <Protected roles={[1]}>
+      <ModelsDetail />
+    </Protected>
+  ),
 });
 
 function ModelsDetail() {

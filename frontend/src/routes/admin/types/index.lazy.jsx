@@ -12,10 +12,15 @@ import Spinner from "react-bootstrap/Spinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { getTypeCars } from "../../../services/types/index";
-import TypeItem from "../../../components/Type/typeItem";
+import TypeItem from "../../../components/Admin/Type/typeItem";
+import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/types/")({
-  component: TypeIndex,
+  component: () => (
+    <Protected roles={[1]}>
+      <TypeIndex />
+    </Protected>
+  ),
 });
 
 function TypeIndex() {

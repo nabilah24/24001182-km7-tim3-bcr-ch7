@@ -13,9 +13,14 @@ import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/types/$id")({
-  component: TypeCarDetail,
+  component: () => (
+    <Protected roles={[1]}>
+      <TypeCarDetail />
+    </Protected>
+  ),
 });
 
 function TypeCarDetail() {
