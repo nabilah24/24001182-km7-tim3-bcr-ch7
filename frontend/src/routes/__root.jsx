@@ -16,7 +16,7 @@ export const Route = createRootRoute({
 
     // Tentukan apakah NavBar dan SideBar harus ditampilkan
     const showNavAndSidebar = location.pathname !== "/login";
-
+    
     return (
       <>
         {showNavAndSidebar ? (

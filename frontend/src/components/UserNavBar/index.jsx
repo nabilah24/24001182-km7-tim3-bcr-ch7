@@ -96,7 +96,7 @@ const UserNavbar = () => {
       }}
     >
       <Container>
-        <Navbar.Brand href="#">
+        <Navbar.Brand as={Link} to="/">
           <svg
             width="100"
             height="34"

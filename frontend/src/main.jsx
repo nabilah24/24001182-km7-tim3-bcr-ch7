@@ -9,6 +9,7 @@ import { store } from "./redux/store";
 import { routeTree } from "./routeTree.gen";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import 'react-toastify/dist/ReactToastify.css';
 
 // Create a new router instance
 const router = createRouter({ routeTree });

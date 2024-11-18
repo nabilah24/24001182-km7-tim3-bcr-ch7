@@ -76,7 +76,7 @@ const AdminNavBar = () => {
             <Nav>
               {user ? (
                 <>
-                  <Nav.Link as={Link} to="/profile">
+                  <Nav.Link as={Link} to="/admin/profile">
                     <Image
                       src={user?.profilePicture}
                       fluid

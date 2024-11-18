@@ -20,13 +20,17 @@ function Login() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const { token } = useSelector((state) => state.auth)
+  const { token, user } = useSelector((state) => state.auth)
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  if (token) {
-    navigate({ to: '/admin' })
+  if (token && user) {
+    if (user?.roleId === 1) {
+      navigate({ to: '/admin' }); // Redirect to admin page
+    } else if (user?.roleId === 2) {
+      navigate({ to: '/' }); // Redirect to user home page
+    }
   }
 
   // Mutation is used for POST, PUT, PATCH and DELETE
@@ -39,12 +43,10 @@ function Login() {
       dispatch(setToken(data?.token))
 
 // Check roleId and redirect accordingly
-      if (data?.roleId === 1) {
+      if (data?.user?.roleId === 1) {
         navigate({ to: '/admin' }); // Redirect to admin page
-      } else if (data?.roleId === 2) {
+      } else if (data?.user?.roleId === 2) {
         navigate({ to: '/' }); // Redirect to user home page
-      } else {
-        toast.error('Role is not recognized');
       }
     },
     onError: (err) => {
