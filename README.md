@@ -14,7 +14,7 @@
   Email: henryhotang23@gmail.com
   Pw: henryAccount4556
 
-- Creator of Search Car Page
+- Creator of Search Car and User Register Page
   Ryan Nicholas Purba
 
 - Creator of Landing Page
