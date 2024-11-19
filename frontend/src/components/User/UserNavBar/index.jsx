@@ -124,7 +124,8 @@ const UserNavbar = () => {
                   <Nav.Link
                     className="active"
                     key={index}
-                    href={`/#${item.toLowerCase().replace(" ", "-")}`}
+                    as={Link} 
+                    to={`/#${item.toLowerCase().replace(" ", "-")}`}
                     style={{
                       fontWeight: 400,
                       fontSize: "14px",

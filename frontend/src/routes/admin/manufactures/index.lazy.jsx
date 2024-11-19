@@ -13,7 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { getManufactures } from "../../../services/manufactures";
-import ManufactureItem from "../../../components/ManufactureItem";
+import ManufactureItem from "../../../components/Admin/ManufactureItem";
 import { confirmAlert } from "react-confirm-alert";
 import { useQuery } from "@tanstack/react-query";
 import Protected from "../../../components/Auth/Protected";
