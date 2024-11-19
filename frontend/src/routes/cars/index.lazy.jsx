@@ -28,7 +28,7 @@ import Protected from "../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/cars/")({
   component: () => (
-    <Protected roles={[2]}>
+    <Protected roles={[1, 2]}>
       <SearchCar />
     </Protected>
   ),
@@ -85,12 +85,7 @@ function SearchCar() {
     availableAt,
     capacity,
   }) => {
-    const response = await getCars(
-      driveType,
-      transmission,
-      availableAt,
-      capacity
-    );
+    const data = await getCars(driveType, transmission, availableAt, capacity);
 
     // if (!response.success) {
     //   throw new Error("Failed to fetch cars");
@@ -98,10 +93,11 @@ function SearchCar() {
 
     // return response.data;
 
-    if (response.success && response.data.length > 0) {
-      return response.data;
+    if (data.length > 0) {
+      return data;
     } else {
       showAlert();
+      return [];
     }
   };
 
@@ -110,7 +106,7 @@ function SearchCar() {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["cars", { driveType, transmission, availableAt, capacity }],
+    queryKey: ["cars", driveType, transmission, availableAt, capacity],
     queryFn: () =>
       fetchCars({ driveType, transmission, availableAt, capacity }),
     enabled: false, // Only fetch when explicitly triggered

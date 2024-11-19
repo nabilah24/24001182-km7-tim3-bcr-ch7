@@ -1,7 +1,6 @@
 import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
-import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
@@ -216,9 +215,12 @@ function Register() {
                 </Button>
               </div>
             </Form>
-            <div className="text-body-secondary fs-6 mt-2 text-center">
-              Already have an account? <Link to="/login">Sign In</Link>
-            </div>
+
+            <Container id="alternative">
+              <div className="text-body-secondary fs-6 mt-2 text-center">
+                Already have an account? <Link to="/login">Sign In</Link>
+              </div>
+            </Container>
           </Container>
         </Col>
       </Row>

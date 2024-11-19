@@ -87,7 +87,7 @@ function Login() {
           md={6}
           className="d-flex align-items-center justify-content-center"
         >
-          <div
+          <Container
             style={{
               width: "100%",
               maxWidth: "400px",
@@ -145,10 +145,13 @@ function Login() {
                 </Button>
               </div>
             </Form>
-            <div className="text-body-secondary fs-6 mt-3 text-center">
-              Don't have an account? <Link href="/register">Sign Up</Link>
-            </div>
-          </div>
+
+            <Container id="alternative">
+              <div className="text-body-secondary fs-6 mt-3 text-center">
+                Don't have an account? <Link href="/register">Sign Up</Link>
+              </div>
+            </Container>
+          </Container>
         </Col>
       </Row>
     </Container>
