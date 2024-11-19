@@ -20,7 +20,7 @@ function Register() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { token } = useSelector((state) => state.auth);
+  const { user, token } = useSelector((state) => state.auth);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -28,8 +28,12 @@ function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [profilePicture, setProfilePicture] = useState(undefined);
 
-  if (token) {
-    navigate({ to: "/admin" });
+  if (token && user) {
+    if (user?.roleId === 1) {
+      navigate({ to: "/admin" }); // Redirect to admin page
+    } else if (user?.roleId === 2) {
+      navigate({ to: "/cars" }); // Redirect to user home page
+    }
   }
 
   // Mutation is used for POST, PUT, PATCH and DELETE
@@ -41,8 +45,12 @@ function Register() {
       // set token to global state
       dispatch(setToken(data?.token));
 
-      // redirect to home
-      navigate({ to: "/" });
+      // Check roleId and redirect accordingly
+      if (data?.user?.roleId === 1) {
+        navigate({ to: "/admin" }); // Redirect to admin page
+      } else if (data?.user?.roleId === 2) {
+        navigate({ to: "/cars" }); // Redirect to user home page
+      }
     },
     onError: (err) => {
       toast.error(err?.message);
@@ -88,26 +96,26 @@ function Register() {
         {/* Right side with form */}
         <Col
           md={6}
-          className="d-flex align-items-center justify-content-center py-3"
+          className="d-flex align-items-center justify-content-center"
         >
-          <div
+          <Container
             style={{
               width: "100%",
-              maxWidth: "400px",
-              padding: "1rem",
+              maxWidth: "500px",
+              padding: "0.5rem",
             }}
           >
             <div className="text-body-secondary fs-5 fw-bold mb-3">
               BINAR CAR RENTAL
             </div>
-            <h4 className="fw-bold">Welcome</h4>
+            <h4 className="fw-bold">Welcome!</h4>
             <Form onSubmit={onSubmit}>
               <Form.Group
                 as={Row}
-                className="mb-3 d-flex flex-column"
+                className="mb-1 d-flex flex-column"
                 controlId="name"
               >
-                <Form.Label column sm={3}>
+                <Form.Label column sm={6}>
                   Name
                 </Form.Label>
                 <Col>
@@ -125,10 +133,10 @@ function Register() {
 
               <Form.Group
                 as={Row}
-                className="mb-3 d-flex flex-column"
+                className="mb-1 d-flex flex-column"
                 controlId="email"
               >
-                <Form.Label column sm={3}>
+                <Form.Label column sm={6}>
                   Email
                 </Form.Label>
                 <Col>
@@ -146,7 +154,7 @@ function Register() {
 
               <Form.Group
                 as={Row}
-                className="mb-3 d-flex flex-column"
+                className="mb-1 d-flex flex-column"
                 controlId="password"
               >
                 <Form.Label column sm={3}>
@@ -167,7 +175,7 @@ function Register() {
 
               <Form.Group
                 as={Row}
-                className="mb-3 d-flex flex-column"
+                className="mb-1 d-flex flex-column"
                 controlId="confirmPassword"
               >
                 <Form.Label column>Confirm Password</Form.Label>
@@ -186,7 +194,7 @@ function Register() {
 
               <Form.Group
                 as={Row}
-                className="mb-3 d-flex flex-column"
+                className="mb-2 d-flex flex-column"
                 controlId="profilePicture"
               >
                 <Form.Label column>Profile Picture</Form.Label>
@@ -202,16 +210,16 @@ function Register() {
                   />
                 </Col>
               </Form.Group>
-              <div className="d-grid gap-2">
+              <div className="d-grid gap-2 mt-4">
                 <Button type="submit" variant="primary" className="rounded-1">
                   Sign Up
                 </Button>
               </div>
             </Form>
-            <div className="text-body-secondary fs-6 mt-3 text-center">
-              Already have an account? <Link href="/login">Sign In</Link>
+            <div className="text-body-secondary fs-6 mt-2 text-center">
+              Already have an account? <Link to="/login">Sign In</Link>
             </div>
-          </div>
+          </Container>
         </Col>
       </Row>
     </Container>

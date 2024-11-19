@@ -4,7 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 
 const HeroSection = () => {
   const navigate = useNavigate();
-  const { token } = useSelector((state) => state.auth); // Mengambil token dari state Redux
+  const { user } = useSelector((state) => state.auth); // Mengambil token dari state Redux
 
   const heroStyles = {
     section: {
@@ -46,7 +46,7 @@ const HeroSection = () => {
 
   const handleButtonClick = (event) => {
     event.preventDefault();
-    if (token) {
+    if (user) {
       // Jika pengguna sudah login, arahkan ke halaman cari mobil
       navigate({ to: "/cars" });
     } else {

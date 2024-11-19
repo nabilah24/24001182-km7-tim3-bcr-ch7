@@ -28,7 +28,7 @@ function Login() {
     if (user?.roleId === 1) {
       navigate({ to: "/admin" }); // Redirect to admin page
     } else if (user?.roleId === 2) {
-      navigate({ to: "/" }); // Redirect to user home page
+      navigate({ to: "/cars" }); // Redirect to user home page
     }
   }
 
@@ -45,7 +45,7 @@ function Login() {
       if (data?.user?.roleId === 1) {
         navigate({ to: "/admin" }); // Redirect to admin page
       } else if (data?.user?.roleId === 2) {
-        navigate({ to: "/" }); // Redirect to user home page
+        navigate({ to: "/cars" }); // Redirect to user home page
       }
     },
     onError: (err) => {
@@ -97,7 +97,7 @@ function Login() {
             <div className="text-body-secondary fs-5 fw-bold mb-3">
               BINAR CAR RENTAL
             </div>
-            <h4 className="fw-bold">Welcome</h4>
+            <h4 className="fw-bold">Welcome Back!</h4>
             <Form onSubmit={onSubmit}>
               <Form.Group
                 as={Row}
