@@ -67,7 +67,7 @@ function CarsDetail() {
   };
 
   const handleRent = () => {
-    if (user?.roleId === 2) {
+    if (user?.roleId === 2 || user?.roleId === 1) {
       Swal.fire({
         title: "Confirm to rent car",
         text: "Are you sure you want to rent this car?",
