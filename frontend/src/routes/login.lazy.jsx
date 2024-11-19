@@ -75,7 +75,7 @@ function Login() {
         <Col
           md={6}
           style={{
-            backgroundImage: `${CarAuth}`, // Replace with your image URL
+            backgroundImage: `url(${CarAuth})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             height: "100vh",

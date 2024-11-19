@@ -85,7 +85,7 @@ function Register() {
         <Col
           md={6}
           style={{
-            backgroundImage: `${CarAuth}`,
+            backgroundImage: `url(${CarAuth})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             height: "100vh",

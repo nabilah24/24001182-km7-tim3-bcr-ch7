@@ -13,11 +13,6 @@ export const Route = createLazyFileRoute("/admin/profile")({
       <Profile />
     </Protected>
   ),
-  component: () => (
-    <Protected roles={[1]}>
-      <AdminProfile />
-    </Protected>
-  ),
 });
 
 function AdminProfile() {
