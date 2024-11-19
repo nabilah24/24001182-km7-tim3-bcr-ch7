@@ -1,24 +1,27 @@
-# FSW-1 Binar Academy
+# 🚗 **FSW-1 Binar Academy: Challenge 7**
 
-# TIM 3
+📌 **TIM 3**
 
-# Challenge 7
+---
 
-------------------------TIM 3-----------------------------------
+## 📋 **Akses Akun**
 
-- Admin
-  Email: mferdybbas23@gmail.com
-  Pw: operAtioNAuthe311
+### 🔑 **Admin Account**
 
-- User
-  Email: henryhotang23@gmail.com
-  Pw: henryAccount4556
+- **Email:** mferdybbas23@gmail.com
+- **Password:** operAtioNAuthe311
 
-- Creator of Search Car and User Register Page
-  Ryan Nicholas Purba
+### 🔑 **User Account**
 
-- Creator of Landing Page
-  Nabilah Zakiyah Salmaa Firdaus
+- **Email:** henryhotang23@gmail.com
+- **Password:** henryAccount4556
 
-- Replacing All API Fetch with useQuery
-  Ridhwan Tsalasah Putra
+---
+
+## 👩‍💻 **Anggota Tim**
+
+| Nama                               | Peran                                        | Kontribusi                                                                                     |
+| ---------------------------------- | -------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Ryan Nicholas Purba**            | Creator of Search Car and User Register Page | Mengembangkan fitur **Search Car** dan **Halaman Registrasi Pengguna**.                        |
+| **Nabilah Zakiyah Salmaa Firdaus** | Creator of Landing Page                      | Membuat **Landing Page** dengan desain interaktif dan responsif.                               |
+| **Ridhwan Tsalasah Putra**         | Replacing All API Fetch with useQuery        | Mengganti semua API fetch dengan implementasi **TanStack React Query** menggunakan `useQuery`. |
