@@ -21,7 +21,7 @@ export const register = async (request) => {
   formData.append("name", request.name);
   formData.append("email", request.email);
   formData.append("password", request.password);
-  formData.append("profile_picture", request.profilePicture);
+  formData.append("profilePicture", request.profilePicture);
 
   const response = await fetch(
     `${import.meta.env.VITE_API_URL}/auth/register`,
