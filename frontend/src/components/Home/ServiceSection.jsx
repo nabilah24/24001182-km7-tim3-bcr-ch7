@@ -1,4 +1,5 @@
 import React from "react";
+import { ServiceImage } from "../../../img";
 
 const ServiceSection = () => {
   const serviceStyles = {
@@ -50,7 +51,7 @@ const ServiceSection = () => {
         <div className="row g-5 d-flex align-items-center">
           <div className="col-lg-6 text-center">
             <img
-              src="/img/img_service.png"
+              src={ServiceImage}
               alt="Service Image"
               style={serviceStyles.image}
               className="img-fluid"
@@ -63,10 +64,7 @@ const ServiceSection = () => {
             >
               Best Car Rental for any kind of trip in (Lokasimu)!
             </h3>
-            <p
-              className="mb-3"
-              style={serviceStyles.paragraph}
-            >
+            <p className="mb-3" style={serviceStyles.paragraph}>
               Sewa mobil di (Lokasimu) bersama Binar Car Rental jaminan harga
               lebih murah dibandingkan yang lain, kondisi mobil baru, serta
               kualitas pelayanan terbaik untuk perjalanan wisata, bisnis,

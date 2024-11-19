@@ -1,6 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "@tanstack/react-router";
+import { CarImage, HeroBackground } from "../../../img";
 
 const HeroSection = () => {
   const navigate = useNavigate();
@@ -8,7 +9,7 @@ const HeroSection = () => {
 
   const heroStyles = {
     section: {
-      background: "url(/img/hero_bg.png) center center no-repeat",
+      background: `${HeroBackground} center center no-repeat`,
       backgroundSize: "cover",
       padding: "5rem 0",
     },
@@ -86,7 +87,7 @@ const HeroSection = () => {
             </button>
           </div>
           <div className="col-md-6 text-lg-end">
-            <img src="/img/car.png" alt="Hero Car" style={heroStyles.image} />
+            <img src={CarImage} alt="Hero Car" style={heroStyles.image} />
           </div>
         </div>
       </div>

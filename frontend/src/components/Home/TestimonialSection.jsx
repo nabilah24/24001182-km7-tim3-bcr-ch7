@@ -1,6 +1,7 @@
 import React from "react";
 import { Carousel } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Testimonial1, Testimonial2, Testimonial3 } from "../../../img";
 
 const TestimonialSection = () => {
   const testimonialStyles = {
@@ -112,7 +113,7 @@ const TestimonialSection = () => {
               <div style={testimonialStyles.container}>
                 <div className="text-center">
                   <img
-                    src="/img/testimonial_1.png"
+                    src={Testimonial1}
                     style={testimonialStyles.image}
                     alt="testimonial"
                   />
@@ -141,7 +142,7 @@ const TestimonialSection = () => {
               <div style={testimonialStyles.container}>
                 <div className="text-center">
                   <img
-                    src="/img/testimonial_2.png"
+                    src={Testimonial2}
                     style={testimonialStyles.image}
                     alt="testimonial"
                   />
@@ -170,7 +171,7 @@ const TestimonialSection = () => {
               <div style={testimonialStyles.container}>
                 <div className="text-center">
                   <img
-                    src="/img/testimonial_3.jpeg"
+                    src={Testimonial3}
                     style={testimonialStyles.image}
                     alt="testimonial"
                   />
