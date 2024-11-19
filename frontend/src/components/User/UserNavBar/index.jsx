@@ -34,18 +34,20 @@ const UserNavbar = () => {
 
   // Update Redux state jika data berhasil diambil
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && token) {
       dispatch(setUser(data));
     } else if (isError) {
       handleLogout(); // Logout otomatis jika ada error
     }
-  }, [isSuccess, isError, data, dispatch]);
+  }, [isSuccess, isError, data, dispatch, token]);
 
   // Logout handler
   const handleLogout = () => {
     dispatch(setUser(null));
     dispatch(setToken(null));
-    navigate("/login");
+
+    // redirect to login
+    navigate({ to: "/" });
   };
 
   const logout = (event) => {

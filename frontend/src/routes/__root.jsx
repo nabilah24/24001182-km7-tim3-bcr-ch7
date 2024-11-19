@@ -5,7 +5,6 @@ import UserNavBar from "../components/User/UserNavBar"; // Navbar untuk Pengguna
 import SideBar from "../components/Admin/SideBar"; // Sidebar untuk Admin
 import { useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
-import { Container } from "react-bootstrap";
 
 export const Route = createRootRoute({
   component: () => {
@@ -18,24 +17,35 @@ export const Route = createRootRoute({
     // Tentukan apakah NavBar dan SideBar harus ditampilkan
     const showNavAndSidebar = location.pathname !== "/login";
 
+    // Periksa apakah admin berada di route "/", "/cars", atau "/cars/:id"
+    const isUserNavbarRoute =
+      location.pathname === "/" ||
+      location.pathname === "/profile" ||
+      location.pathname.startsWith("/cars");
+
     return (
       <>
         {showNavAndSidebar ? (
           <>
-            {/* Render NavBar dan SideBar berdasarkan role */}
+            {/* Render NavBar dan SideBar berdasarkan role dan route */}
             {isAdmin ? (
-              <>
-                <AdminNavBar />
-                <SideBar>
+              isUserNavbarRoute ? (
+                <>
+                  <UserNavBar />
                   <Outlet />
-                </SideBar>
-              </>
+                </>
+              ) : (
+                <>
+                  <AdminNavBar />
+                  <SideBar>
+                    <Outlet />
+                  </SideBar>
+                </>
+              )
             ) : (
               <>
                 <UserNavBar />
-                {/* <Container> */}
                 <Outlet />
-                {/* </Container> */}
               </>
             )}
           </>

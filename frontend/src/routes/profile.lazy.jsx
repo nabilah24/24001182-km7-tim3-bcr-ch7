@@ -11,7 +11,7 @@ import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 export const Route = createLazyFileRoute("/profile")({
   component: () => (
-    <Protected roles={[2]}>
+    <Protected roles={[1, 2]}>
       <UserProfile />
     </Protected>
   ),

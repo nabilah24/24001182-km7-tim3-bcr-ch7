@@ -13,6 +13,7 @@ import {
   Image,
 } from "react-bootstrap";
 import { useQuery } from "@tanstack/react-query";
+import Swal from "sweetalert2";
 
 const AdminNavBar = () => {
   const dispatch = useDispatch();
@@ -26,7 +27,7 @@ const AdminNavBar = () => {
     dispatch(setToken(null));
 
     // redirect to login
-    navigate({ to: "/login" });
+    navigate({ to: "/" });
   }, [dispatch, navigate]);
 
   // Use react query to fetch API
@@ -46,7 +47,20 @@ const AdminNavBar = () => {
 
   const logout = (event) => {
     event.preventDefault();
-    handleLogout();
+    Swal.fire({
+      title: "Confirm to log out",
+      text: "Are you sure you want to log out?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      confirmButtonColor: "#0d6efd",
+      cancelButtonText: "No",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleLogout();
+      }
+    });
   };
 
   return (
