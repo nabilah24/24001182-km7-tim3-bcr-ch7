@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { createLazyFileRoute, useNavigate } from '@tanstack/react-router'
+import { useState, useEffect } from "react";
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   Container,
   Button,
@@ -8,104 +8,154 @@ import {
   Card,
   Form,
   Spinner,
-} from 'react-bootstrap'
-import HeroSection from '../../components/User/Cars/HeroSection'
-import FooterSection from '../../components/User/Cars/FooterSection'
-import CarCard from '../../components/User/Cars/CarCard'
-import { getCars } from '../../services/cars'
-import { getTransmissions } from '../../services/transmissions'
-import { getTypeCars } from '../../services/types'
-import { useSelector } from 'react-redux'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+} from "react-bootstrap";
+import HeroSection from "../../components/User/Cars/HeroSection";
+import FooterSection from "../../components/User/Cars/FooterSection";
+import CarCard from "../../components/User/Cars/CarCard";
+import { getCars } from "../../services/cars";
+import { getTransmissions } from "../../services/transmissions";
+import { useSelector } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCar,
   faClock,
   faGear,
   faUser,
-} from '@fortawesome/free-solid-svg-icons'
-import Swal from 'sweetalert2'
-import { useQuery } from '@tanstack/react-query'
-import Protected from '../../components/Auth/Protected'
+} from "@fortawesome/free-solid-svg-icons";
+import Swal from "sweetalert2";
+import { useQuery } from "@tanstack/react-query";
+import Protected from "../../components/Auth/Protected";
 
-export const Route = createLazyFileRoute('/cars/')({
+export const Route = createLazyFileRoute("/cars/")({
   component: () => (
     <Protected roles={[2]}>
       <SearchCar />
     </Protected>
   ),
-})
+});
 
 function SearchCar() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // Query params
-  const [driveType, setDriveType] = useState('')
-  const [transmission, setTransmission] = useState('')
-  const [availableAt, setAvailableAt] = useState('')
-  const [capacity, setCapacity] = useState(0)
+  const [driveType, setDriveType] = useState("");
+  const [transmission, setTransmission] = useState("");
+  const [availableAt, setAvailableAt] = useState("");
+  const [capacity, setCapacity] = useState(0);
 
-  const [cars, setCars] = useState([])
+  // const [cars, setCars] = useState([]);
   // const [transmissions, setTransmissions] = useState([]);
-  const [isLoading, setIsLoading] = useState(false)
+  // const [isLoading, setIsLoading] = useState(false);
 
-  const { token } = useSelector((state) => state.auth)
+  const { token } = useSelector((state) => state.auth);
 
   const showAlert = () => {
     Swal.fire({
-      icon: 'warning',
-      title: 'Cars Not Found!',
-      text: 'Try other keywords',
-      confirmButtonText: 'OK',
-    })
-  }
+      icon: "warning",
+      title: "Cars Not Found!",
+      text: "Try other keywords",
+      confirmButtonText: "OK",
+    });
+  };
+
+  const showErrorAlert = () => {
+    Swal.fire({
+      icon: "error",
+      title: "Error Fetching Cars",
+      text: "Please try again later",
+      confirmButtonText: "OK",
+    });
+  };
 
   // tanstack query fetch data transmissions
   const { data: transmissions } = useQuery({
-    queryKey: ['transmissions'],
+    queryKey: ["transmissions"],
     queryFn: () => getTransmissions(),
-  })
+  });
 
   const handleAvailableAt = (event) => {
-    const selectedDate = event.target.value // Format YYYY-MM-DD
-    const isoDate = new Date(`${selectedDate}T00:00:00Z`).toISOString() // Konversi ke ISO 8601
-    setAvailableAt(isoDate) // Simpan dalam format ISO 8601
-  }
+    const selectedDate = event.target.value; // Format YYYY-MM-DD
+    const isoDate = new Date(`${selectedDate}T00:00:00Z`).toISOString(); // Konversi ke ISO 8601
+    setAvailableAt(isoDate); // Simpan dalam format ISO 8601
+  };
 
-  // const { data: cars, isLoading } = useQuery({
-  //   queryKey: ["cars", driveType, transmission, availableAt, capacity], // Unique query key
-  //   queryFn: () => getCars(driveType, transmission, availableAt, capacity), // Fetching function
-  //   enabled: !!driveType || !!transmission || !!availableAt || !!capacity, // Only run query when filters are set
-  //   onError: () => {
-  //     showAlert(); // Display alert on error
-  //   },
-  // });
+  const fetchCars = async ({
+    driveType,
+    transmission,
+    availableAt,
+    capacity,
+  }) => {
+    const response = await getCars(
+      driveType,
+      transmission,
+      availableAt,
+      capacity
+    );
 
-  const searchCars = async () => {
-    setIsLoading(true)
-    const result = await getCars(driveType, transmission, availableAt, capacity)
+    // if (!response.success) {
+    //   throw new Error("Failed to fetch cars");
+    // }
 
-    if (result.success && result.data.length > 0) {
-      setCars(result.data)
-      setIsLoading(false)
+    // return response.data;
+
+    if (response.success && response.data.length > 0) {
+      return response.data;
     } else {
-      setCars([])
-      setIsLoading(false)
-      showAlert()
+      showAlert();
     }
-  }
+  };
+
+  const {
+    data: cars = [],
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["cars", { driveType, transmission, availableAt, capacity }],
+    queryFn: () =>
+      fetchCars({ driveType, transmission, availableAt, capacity }),
+    enabled: false, // Only fetch when explicitly triggered
+    onSuccess: (data) => {
+      if (data.length === 0) {
+        showAlert();
+      }
+    },
+    onError: () => {
+      showErrorAlert();
+    },
+  });
+
+  // const searchCars = async () => {
+  //   setIsLoading(true);
+  //   const result = await getCars(
+  //     driveType,
+  //     transmission,
+  //     availableAt,
+  //     capacity
+  //   );
+
+  //   if (result.success && result.data.length > 0) {
+  //     setCars(result.data);
+  //     setIsLoading(false);
+  //   } else {
+  //     setCars([]);
+  //     setIsLoading(false);
+  //     showAlert();
+  //   }
+  // };
 
   // handleSearchCars untuk Form
   const handleSearchCars = (event) => {
-    event.preventDefault()
-    searchCars()
-  }
+    event.preventDefault();
+    // searchCars();
+    refetch();
+  };
 
   // Redirect ke login kalau token tidak ada
   useEffect(() => {
     if (!token) {
-      navigate('/login')
+      navigate("/login");
     }
-  }, [navigate, token])
+  }, [navigate, token]);
 
   return (
     <>
@@ -118,7 +168,7 @@ function SearchCar() {
         <Form onSubmit={handleSearchCars}>
           <Card
             className="mb-1 d-flex justify-content-center shadow custom-form"
-            style={{ minHeight: '140px' }}
+            style={{ minHeight: "140px" }}
           >
             <Card.Body>
               <Row className="pt-3 gap-3">
@@ -128,7 +178,7 @@ function SearchCar() {
                     <Form.Label className="d-flex align-items-center gap-1">
                       <FontAwesomeIcon
                         icon={faCar}
-                        style={{ color: '#0d6efd' }}
+                        style={{ color: "#0d6efd" }}
                       />
                       Drive Type
                     </Form.Label>
@@ -156,7 +206,7 @@ function SearchCar() {
                     <Form.Label className="d-flex align-items-center gap-1">
                       <FontAwesomeIcon
                         icon={faGear}
-                        style={{ color: '#0d6efd' }}
+                        style={{ color: "#0d6efd" }}
                       />
                       Transmission
                     </Form.Label>
@@ -183,14 +233,14 @@ function SearchCar() {
                     <Form.Label className="d-flex align-items-center gap-1">
                       <FontAwesomeIcon
                         icon={faClock}
-                        style={{ color: '#0d6efd' }}
+                        style={{ color: "#0d6efd" }}
                       />
                       Time Available
                     </Form.Label>
                     <Form.Control
                       type="date"
                       size="sm"
-                      value={availableAt.split('T')[0]}
+                      value={availableAt.split("T")[0]}
                       onChange={handleAvailableAt}
                     />
                   </Form.Group>
@@ -202,7 +252,7 @@ function SearchCar() {
                     <Form.Label className="d-flex align-items-center gap-1">
                       <FontAwesomeIcon
                         icon={faUser}
-                        style={{ color: '#0d6efd' }}
+                        style={{ color: "#0d6efd" }}
                       />
                       Capacity
                     </Form.Label>
@@ -226,7 +276,7 @@ function SearchCar() {
                     {isLoading ? (
                       <Spinner animation="border" size="sm" />
                     ) : (
-                      'Cari Mobil'
+                      "Cari Mobil"
                     )}
                   </Button>
                 </Col>
@@ -236,12 +286,12 @@ function SearchCar() {
         </Form>
       </Container>
 
-      {/* Root/Container */}
+      {/* Root/Container for Car Cards */}
       <Container>
         <Row className="mt-5 ms-1">
           {isLoading ? (
             <Col
-              style={{ height: '30vh' }}
+              style={{ height: "30vh" }}
               className="d-flex justify-content-center align-items-center w-100"
             >
               <Spinner animation="border" />
@@ -259,5 +309,5 @@ function SearchCar() {
       {/* Footer */}
       <FooterSection />
     </>
-  )
+  );
 }
